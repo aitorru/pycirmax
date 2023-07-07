@@ -1,0 +1,9 @@
+[config]
+clinica_id=1
+
+[database]
+name="Cirmax"
+user="cirmax"
+password="cirmaxp"
+host="localhost"
+port=3306

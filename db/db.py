@@ -1,11 +1,28 @@
-from sqlalchemy import Column, Integer, String, create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, ForeignKey, Integer, String, create_engine
+from sqlalchemy.orm import sessionmaker, scoped_session, relationship
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
+# Read the config file
+import toml
+with open('config.toml', 'r') as f:
+    config = toml.load(f)
+
 class Database:
-    def __init__(self, db_name, user, password, host='localhost', port=3306):
+    def __init__(self, db_name=config['database']['name'], user=config['database']['user'], password=config['database']['password'], host=config['database']['host'], port=config['database']['port']):
+        self.engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{db_name}')
+        self._session = scoped_session(sessionmaker(bind=self.engine))
+
+    @property
+    def session(self):
+        return self._session()
+
+    def create_tables(self):
+        Base.metadata.create_all(self.engine)
+
+class _Database:
+    def __init__(self, db_name=config['database']['name'], user=config['database']['user'], password=config['database']['password'], host=config['database']['host'], port=config['database']['port']):
         self.engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{db_name}')
         self._session = sessionmaker(bind=self.engine)
 
@@ -41,7 +58,32 @@ class User(Base):
 
     def get_code(self):
         return self.code
+
+class Cofiguration(Base):
+    __tablename__ = 'configurations'
+
+    id = Column(Integer, primary_key=True)
+    nif = Column(String)
+    razon_social = Column(String)
+    domicilio = Column(String)
+    codigo_postal = Column(String)
+    poblacion = Column(String)
+    provincia = Column(String)
+    telefono = Column(String)
+    fax = Column(String)
+    coletilla_gdpr = Column(String)
+    # Create a foreign key relationship with `clinicas` table
+    clinica_id = Column(Integer, ForeignKey('clinicas.id'))
+    clinica = relationship("Clinica", backref="configuration")
+
     
+
+class Clinica(Base):
+    __tablename__ = 'clinicas'
+
+    id = Column(Integer, primary_key=True)
+    letra = Column(String)
+    nombre = Column(String)
 
 class _State:
     def __init__(self):
@@ -58,7 +100,8 @@ class _State:
             return ''
         return str(self.usuario_activo.name)
 
-db = Database('Cirmax', 'cirmax', 'cirmaxp')
+db = _Database()
 db.create_tables()
 
 usuario_activo = _State()
+

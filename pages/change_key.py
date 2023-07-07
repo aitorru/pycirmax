@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QApplication, QHBoxLayout, QVBoxLayout, QGridLayout, QMessageBox
 from PyQt5.QtCore import Qt
 import bcrypt
+from sqlalchemy import inspect
 
 from db.db import User, Database
 
@@ -30,6 +31,7 @@ class ChangeKey(QWidget):
         
         self.codigo_edit = QLineEdit()
         self.codigo_edit.setText(str(self.user.code))
+        self.codigo_edit.setDisabled(True)
         self.nombre_edit = QLineEdit()
         self.nombre_edit.setText(str(self.user.name))
         self.clave_edit = QLineEdit()
@@ -69,17 +71,14 @@ class ChangeKey(QWidget):
             self.buttonAceptar.setEnabled(True)
     
     def change_credentials(self):
-        db = Database('Cirmax', 'cirmax', 'cirmaxp')
+        db = Database()
 
         if self.clave_edit.text() != self.confirmar_clave_edit.text():
             QMessageBox.warning(self, "Error", "Las claves no coinciden")
             return
+        
         # Generate hash with bcrypt
         hashed = bcrypt.hashpw(self.clave_edit.text().encode('utf-8'), bcrypt.gensalt())
-
-        # Create temp user
-        # user_to_change = User(id=self.user.id, code=self.codigo_edit.text(), name=self.nombre_edit.text(), password=hashed.decode('utf-8'))
-
 
         user = db.session.query(User).filter(User.id == self.user.id).first()
 
@@ -91,9 +90,14 @@ class ChangeKey(QWidget):
         user.name = self.nombre_edit.text()
         user.password = hashed.decode('utf-8')
 
-        db.session.commit()
-
-        QMessageBox.information(self, "Exito", "Usuario actualizado")
+        try:
+            db.session.flush()
+            db.session.commit()
+            QMessageBox.information(self, "Exito", "Usuario actualizado")
+            db.session.close()
+        except Exception as e:
+            print("Commit failed: ", e)
+            db.session.rollback()
         self.close()
 
     def close(self):

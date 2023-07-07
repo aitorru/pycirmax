@@ -1,0 +1,9 @@
+{
+	"nodes":[
+		{"type":"file","file":"develop/Configuración del programa.md","id":"35eeb023b3f8e464","x":-460,"y":-406,"width":400,"height":667},
+		{"id":"daee73e3c486660b","x":20,"y":-533,"width":400,"height":253,"type":"file","file":"develop/Conexión con la DB.md"}
+	],
+	"edges":[
+		{"id":"1152b4922a5cd4c4","fromNode":"daee73e3c486660b","fromSide":"bottom","toNode":"35eeb023b3f8e464","toSide":"right"}
+	]
+}

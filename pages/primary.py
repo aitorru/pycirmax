@@ -34,6 +34,7 @@ class MainWindow(QMainWindow):
         menubar.addMenu(archivos_menu)
 
         configuracion_action = QAction("Configuracion", self)
+        configuracion_action.triggered.connect(self.open_configuracion)
         archivos_menu.addAction(configuracion_action)
         archivos_menu.addSeparator()
 
@@ -115,3 +116,8 @@ class MainWindow(QMainWindow):
         self.hide()
         self.login_page = LoginPage()
         self.login_page.show()
+
+    def open_configuracion(self):
+        from pages.menu_archivo.config import ConfigPage
+        self.configuracion_page = ConfigPage()
+        self.configuracion_page.show()

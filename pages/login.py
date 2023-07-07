@@ -62,10 +62,10 @@ class LoginPage(QWidget):
         username = self.lineEditUsername.text()
 
         # Password is empty as we dont need it
-        user_to_check = User(name=username, password="")
+        user_to_check = User(code=username, password="")
 
         # Get all users in the db and check if the user exists
-        users = db.session.query(User).where(User.name == user_to_check.name).all()
+        users = db.session.query(User).where(User.code == user_to_check.code).all() # type: ignore
         if len(users) == 0:
             QMessageBox.warning(self, 'Error', 'Usuario no encontrado')
             return
@@ -93,10 +93,10 @@ class LoginPage(QWidget):
         username = self.lineEditUsername.text()
 
         # Password is empty as we dont need it
-        user_to_check = User(name=username, password="")
+        user_to_check = User(code=username, password="")
 
         # Get all users in the db and check if the user exists
-        users = db.session.query(User).where(User.name == user_to_check.name).all()
+        users = db.session.query(User).where(User.code == user_to_check.code).all() # type: ignore
         if len(users) == 0:
             QMessageBox.warning(self, 'Error', 'Usuario no encontrado')
             return
