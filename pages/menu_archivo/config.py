@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QApplication, QHBoxLayout, QPushButton, QTabWidget, QVBoxLayout, QFrame, QTabBar, QFormLayout, QLabel, QLineEdit, QTextEdit, QMessageBox
 from PyQt5.QtCore import QSize
 
-from db.db import config, db, Empresa, Database, Presupuesto
+from db.db import config, db, Empresa, Database, Presupuesto, Factura
 
 class ConfigPage(QWidget):
     def __init__(self) -> None:
@@ -14,6 +14,7 @@ class ConfigPage(QWidget):
         # Load classes first
         self.empresa = EmpresaPage()
         self.presupuestos = PresupuestosPage()
+        self.facturas = FacturasPage()
 
         # Center the window on the screen
         width = 1000
@@ -63,7 +64,7 @@ class ConfigPage(QWidget):
         # self.tab_widget.setTabBar(CustomTabBar())  # Use the custom tab bar
         self.tab_widget.addTab(self.empresa, "Empresa")
         self.tab_widget.addTab(self.presupuestos, "Presupuestos")
-        self.tab_widget.addTab(FacturasPage(), "Facturas")
+        self.tab_widget.addTab(self.facturas, "Facturas")
 
         self.layout.addWidget(self.button_frame)
         self.layout.addWidget(self.tab_widget)
@@ -77,6 +78,7 @@ class ConfigPage(QWidget):
         # TODO: Add the rest
         self.empresa.enable_all_fields()
         self.presupuestos.enable_all_fields()
+        self.facturas.enable_all_fields()
     
     def disable_editing(self):
         # TODO: Add the rest
@@ -87,13 +89,17 @@ class ConfigPage(QWidget):
 
         self.empresa.load_data()
         self.presupuestos.load_data()
+        self.facturas.load_data()
         self.empresa.disable_all_fields()
         self.presupuestos.disable_all_fields()
+        self.facturas.disable_all_fields()
+
     
     def save_data(self):
         # TODO: Add the rest
         self.empresa.save_data()
         self.presupuestos.save_data()
+        self.facturas.save_data()
 
         self.disable_editing()
 
@@ -303,12 +309,71 @@ class FacturasPage(QWidget):
     def __init__(self) -> None:
         super().__init__()
         self.initUI()
+        self.load_data()
+        self.disable_all_fields()
 
     def initUI(self):
-        self.layout = QVBoxLayout() # type: ignore
+        self.layout = QFormLayout() # type: ignore
         self.setLayout(self.layout)
 
-        self.layout.addWidget(QPushButton("Facturas"))
+        self.encabezamiento_label = QLabel("Encabezamiento")
+        self.encabezamiento_edit = QTextEdit()
+
+        self.layout.addRow(self.encabezamiento_label, self.encabezamiento_edit)
+
+        self.pie_de_firma = QLabel("Pie de firma")
+        self.pie_de_firma_edit = QLineEdit()
+
+        self.layout.addRow(self.pie_de_firma, self.pie_de_firma_edit)
+
+        self.coletilla_execion_IVA = QLabel("Coletilla de exención de IVA")
+        self.coletilla_execion_IVA_edit = QTextEdit()
+
+        self.layout.addRow(self.coletilla_execion_IVA, self.coletilla_execion_IVA_edit)
+
+    def disable_all_fields(self):
+        self.encabezamiento_edit.setEnabled(False)
+        self.pie_de_firma_edit.setEnabled(False)
+        self.coletilla_execion_IVA_edit.setEnabled(False)
+    
+    def enable_all_fields(self):
+        self.encabezamiento_edit.setEnabled(True)
+        self.pie_de_firma_edit.setEnabled(True)
+        self.coletilla_execion_IVA_edit.setEnabled(True)
+
+    def load_data(self):
+        self.config_from_db = db.session.query(Factura).where(Factura.clinica_id == config['config']['clinica_id']).first()
+
+        if self.config_from_db == None:
+            QMessageBox.critical(self, "Error", "No se ha encontrado la clínica en la base de datos. Existe el fichero config.toml? Existe la clínica en la base de datos?Existe clinica_id en el fichero?")
+            return
+        
+        self.encabezamiento_edit.setText(self.config_from_db.encabezamiento) # type: ignore
+        self.pie_de_firma_edit.setText(self.config_from_db.pie) # type: ignore
+        self.coletilla_execion_IVA_edit.setText(self.config_from_db.coletilla_execion_IVA) # type: ignore
+    
+    def save_data(self):
+        thread_safe_db = Database()
+
+        factura_db = thread_safe_db.session.query(Factura).where(Factura.clinica_id == config['config']['clinica_id']).first()
+
+        if factura_db == None:
+            QMessageBox.critical(self, "Error", "No se ha encontrado la clínica en la base de datos. Existe el fichero config.toml? Existe la clínica en la base de datos?Existe clinica_id en el fichero?")
+            return
+        
+        factura_db.encabezamiento = self.encabezamiento_edit.toPlainText() # type: ignore
+        factura_db.pie = self.pie_de_firma_edit.text() # type: ignore
+        factura_db.coletilla_execion_IVA = self.coletilla_execion_IVA_edit.toPlainText() # type: ignore
+
+        try:
+            thread_safe_db.session.flush()
+            thread_safe_db.session.commit()
+            thread_safe_db.session.close()
+        except Exception as e:
+            print("Commit failed: ", e)
+            thread_safe_db.session.rollback()
+
+
 
 
 class CustomTabBar(QTabBar):

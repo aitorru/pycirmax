@@ -85,6 +85,16 @@ class Presupuesto(Base):
     forma_de_pago = Column(String)
     clinica_id = Column(Integer, ForeignKey('clinicas.id'))
     clinica = relationship("Clinica", backref="presupuesto")
+
+class Factura(Base):
+    __tablename__ = 'factura'
+
+    id = Column(Integer, primary_key=True)
+    encabezamiento = Column(String)
+    pie = Column(String)
+    coletilla_execion_IVA = Column(String)
+    clinica_id = Column(Integer, ForeignKey('clinicas.id'))
+    clinica = relationship("Clinica", backref="factura")
     
 
 class Clinica(Base):
