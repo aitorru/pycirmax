@@ -86,16 +86,15 @@ class ConfigPage(QWidget):
         self.salir_button.setEnabled(True)
 
         self.empresa.load_data()
-        self.empresa.disable_all_fields()
         self.presupuestos.load_data()
+        self.empresa.disable_all_fields()
         self.presupuestos.disable_all_fields()
     
     def save_data(self):
         # TODO: Add the rest
         self.empresa.save_data()
-        self.disable_editing()
-
         self.presupuestos.save_data()
+
         self.disable_editing()
 
         QMessageBox.information(self, "Exito", "Configuración guardada con éxito")
@@ -278,15 +277,16 @@ class PresupuestosPage(QWidget):
     def save_data(self):
         thread_safe_db = Database()
 
-        presupuesto_from_db = thread_safe_db.session.query(Presupuesto).where(Presupuesto.clinica_id == config['config']['clinica_id']).first()
+        presupuesto_db = thread_safe_db.session.query(Presupuesto).where(Presupuesto.clinica_id == config['config']['clinica_id']).first()
 
-        if presupuesto_from_db == None:
+        if presupuesto_db == None:
             QMessageBox.critical(self, "Error", "No se ha encontrado la clínica en la base de datos. Existe el fichero config.toml? Existe la clínica en la base de datos?Existe clinica_id en el fichero?")
             return
         
-        presupuesto_from_db.encabezamiento = self.encabezamiento_edit.toPlainText() # type: ignore
-        presupuesto_from_db.pie = self.pie_de_firma_edit.text() # type: ignore
-        presupuesto_from_db.forma_de_pago = self.coletilla_forma_de_pago_edit.toPlainText() # type: ignore
+        presupuesto_db.encabezamiento = self.encabezamiento_edit.toPlainText() # type: ignore
+        presupuesto_db.pie = self.pie_de_firma_edit.text() # type: ignore
+        presupuesto_db.forma_de_pago = self.coletilla_forma_de_pago_edit.toPlainText() # type: ignore
+
 
         try:
             thread_safe_db.session.flush()
