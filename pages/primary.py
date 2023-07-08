@@ -33,7 +33,7 @@ class MainWindow(QMainWindow):
         archivos_menu = QMenu("Archivos", self)
         menubar.addMenu(archivos_menu)
 
-        configuracion_action = QAction("Configuracion", self)
+        configuracion_action = QAction("Configuración", self)
         configuracion_action.triggered.connect(self.open_configuracion)
         archivos_menu.addAction(configuracion_action)
         archivos_menu.addSeparator()

@@ -1,3 +1,4 @@
+#config
 Se va a usar un fichero `config.toml` en la raíz.
 
 
@@ -10,7 +11,7 @@ clinica_id=1
 ```
 # Conexión con DB
 
-La [conexión con la DB](Conexión con la DB) se realiza desde ese fichero.
+La [[Conexión con la DB]] se realiza desde ese fichero.
 
 + `name`: Nombre de la DB
 + `user`: Usuario para la conexión

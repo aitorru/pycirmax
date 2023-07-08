@@ -59,8 +59,8 @@ class User(Base):
     def get_code(self):
         return self.code
 
-class Cofiguration(Base):
-    __tablename__ = 'configurations'
+class Empresa(Base):
+    __tablename__ = 'empresa'
 
     id = Column(Integer, primary_key=True)
     nif = Column(String)
@@ -74,8 +74,17 @@ class Cofiguration(Base):
     coletilla_gdpr = Column(String)
     # Create a foreign key relationship with `clinicas` table
     clinica_id = Column(Integer, ForeignKey('clinicas.id'))
-    clinica = relationship("Clinica", backref="configuration")
+    clinica = relationship("Clinica", backref="empresa")
 
+class Presupuesto(Base):
+    __tablename__ = 'presupuesto'
+
+    id = Column(Integer, primary_key=True)
+    encabezamiento = Column(String)
+    pie = Column(String)
+    forma_de_pago = Column(String)
+    clinica_id = Column(Integer, ForeignKey('clinicas.id'))
+    clinica = relationship("Clinica", backref="presupuesto")
     
 
 class Clinica(Base):

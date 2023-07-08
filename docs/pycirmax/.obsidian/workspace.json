@@ -6,6 +6,7 @@
       {
         "id": "6089bb22f41876be",
         "type": "tabs",
+        "dimension": 63.874680306905375,
         "children": [
           {
             "id": "3d58a4f2b64c3ff4",
@@ -13,10 +14,42 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "develop/Configuración del programa.md",
+                "file": "ventanas/Principal.md",
                 "mode": "source",
                 "source": false
               }
+            }
+          },
+          {
+            "id": "f95dfe531bbdc317",
+            "type": "leaf",
+            "state": {
+              "type": "canvas",
+              "state": {
+                "file": "tablas/Mapa tablas.canvas",
+                "viewState": {
+                  "x": 117.43329002209089,
+                  "y": -158.4283393915189,
+                  "zoom": -0.8333333333333334
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "6f70ac61276918a7",
+        "type": "tabs",
+        "dimension": 36.12531969309463,
+        "children": [
+          {
+            "id": "92c2347a4a606ce2",
+            "type": "leaf",
+            "pinned": true,
+            "state": {
+              "type": "graph",
+              "state": {},
+              "pinned": true
             }
           }
         ]
@@ -85,7 +118,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "develop/Configuración del programa.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +134,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "develop/Configuración del programa.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -124,9 +155,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "develop/Configuración del programa.md"
-              }
+              "state": {}
             }
           }
         ]
@@ -146,11 +175,29 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "3d58a4f2b64c3ff4",
+  "active": "92c2347a4a606ce2",
   "lastOpenFiles": [
-    "develop/Conexión con la DB.md",
-    "develop/Mapa.canvas",
-    "develop/Configuración del programa.md",
+    "ventanas/Principal.md",
+    "TODO FIX.md",
+    "Pasted image 20230708173800.png",
+    "Pasted image 20230708173653.png",
+    "tablas/Mapa tablas.canvas",
+    "ventanas/Login.md",
+    "ventanas/Cambiar clave.md",
+    "Pasted image 20230708144245.png",
+    "Pasted image 20230708144152.png",
+    "Pasted image 20230708143949.png",
+    "tablas/User.md",
+    "ventanas",
+    "tablas/Clínicas.md",
+    "tablas/Presupuestos.md",
+    "tablas/Empresa.md",
+    "Configuración del programa.md",
+    "Conexión con la DB.md",
+    "Configuración.md",
+    "Conexión.md",
+    "Mapa.canvas",
+    "tablas",
     "conexión.md",
     "master",
     "develop"

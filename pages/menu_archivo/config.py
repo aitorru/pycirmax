@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QApplication, QHBoxLayout, QPushButton, QTabWidget, QVBoxLayout, QFrame, QTabBar, QFormLayout, QLabel, QLineEdit, QTextEdit, QMessageBox
 from PyQt5.QtCore import QSize
 
-from db.db import config, db, Cofiguration, Database
+from db.db import config, db, Empresa, Database, Presupuesto
 
 class ConfigPage(QWidget):
     def __init__(self) -> None:
@@ -13,6 +13,7 @@ class ConfigPage(QWidget):
 
         # Load classes first
         self.empresa = EmpresaPage()
+        self.presupuestos = PresupuestosPage()
 
         # Center the window on the screen
         width = 1000
@@ -52,11 +53,6 @@ class ConfigPage(QWidget):
         self.button_frame_layout.addWidget(self.salir_button)
 
         self.button_frame.setLayout(self.button_frame_layout)
-        # Connect the buttons to the corresponding functions
-        # self.editar_button.clicked.connect(self.editar)
-        # self.validar_button.clicked.connect(self.validar)
-        # self.cancelar_button.clicked.connect(self.cancelar)
-        # self.salir_button.clicked.connect(self.salir)
 
         self.setLayout(self.layout)
 
@@ -66,7 +62,7 @@ class ConfigPage(QWidget):
         # TODO: This does not work
         # self.tab_widget.setTabBar(CustomTabBar())  # Use the custom tab bar
         self.tab_widget.addTab(self.empresa, "Empresa")
-        self.tab_widget.addTab(PresupuestosPage(), "Presupuestos")
+        self.tab_widget.addTab(self.presupuestos, "Presupuestos")
         self.tab_widget.addTab(FacturasPage(), "Facturas")
 
         self.layout.addWidget(self.button_frame)
@@ -80,6 +76,7 @@ class ConfigPage(QWidget):
 
         # TODO: Add the rest
         self.empresa.enable_all_fields()
+        self.presupuestos.enable_all_fields()
     
     def disable_editing(self):
         # TODO: Add the rest
@@ -88,13 +85,19 @@ class ConfigPage(QWidget):
         self.cancelar_button.setEnabled(False)
         self.salir_button.setEnabled(True)
 
-        self.empresa.loadData()
+        self.empresa.load_data()
         self.empresa.disable_all_fields()
+        self.presupuestos.load_data()
+        self.presupuestos.disable_all_fields()
     
     def save_data(self):
         # TODO: Add the rest
         self.empresa.save_data()
         self.disable_editing()
+
+        self.presupuestos.save_data()
+        self.disable_editing()
+
         QMessageBox.information(self, "Exito", "Configuración guardada con éxito")
 
 
@@ -102,7 +105,7 @@ class EmpresaPage(QWidget):
     def __init__(self) -> None:
         super().__init__()
         self.initUI()
-        self.loadData()
+        self.load_data()
         self.disable_all_fields()
 
     def initUI(self):
@@ -154,9 +157,9 @@ class EmpresaPage(QWidget):
 
         self.layout.addRow(self.coletilla_gdpr_label, self.coletilla_gdpr_edit)
 
-    def loadData(self):
+    def load_data(self):
         # Pull the clinica from the db
-        self.config_from_db = db.session.query(Cofiguration).where(Cofiguration.clinica_id == config['config']['clinica_id']).first()
+        self.config_from_db = db.session.query(Empresa).where(Empresa.clinica_id == config['config']['clinica_id']).first()
 
         if self.config_from_db == None:
             QMessageBox.critical(self, "Error", "No se ha encontrado la clínica en la base de datos. Existe el fichero config.toml? Existe la clínica en la base de datos?Existe clinica_id en el fichero?")
@@ -198,7 +201,7 @@ class EmpresaPage(QWidget):
     def save_data(self):
         thread_safe_db = Database()
 
-        config_db = thread_safe_db.session.query(Cofiguration).where(Cofiguration.clinica_id == config['config']['clinica_id']).first()
+        config_db = thread_safe_db.session.query(Empresa).where(Empresa.clinica_id == config['config']['clinica_id']).first()
 
         if config_db == None:
             QMessageBox.critical(self, "Error", "No se ha encontrado la clínica en la base de datos. Existe el fichero config.toml? Existe la clínica en la base de datos?Existe clinica_id en el fichero?")
@@ -228,12 +231,73 @@ class PresupuestosPage(QWidget):
     def __init__(self) -> None:
         super().__init__()
         self.initUI()
+        self.load_data()
+        self.disable_all_fields()
 
     def initUI(self):
-        self.layout = QVBoxLayout() # type: ignore
+        self.layout = QFormLayout() # type: ignore
         self.setLayout(self.layout)
 
-        self.layout.addWidget(QPushButton("Presupuestos"))
+        self.encabezamiento_label = QLabel("Encabezamiento")
+        self.encabezamiento_edit = QTextEdit()
+
+        self.layout.addRow(self.encabezamiento_label, self.encabezamiento_edit)
+
+        self.pie_de_firma_label = QLabel("Pie de firma")
+        self.pie_de_firma_edit = QLineEdit()
+
+        self.layout.addRow(self.pie_de_firma_label, self.pie_de_firma_edit)
+
+        self.coletilla_forma_de_pago_label = QLabel("Coletilla forma de pago")
+        self.coletilla_forma_de_pago_edit = QTextEdit()
+
+        self.layout.addRow(self.coletilla_forma_de_pago_label, self.coletilla_forma_de_pago_edit)
+    
+    def disable_all_fields(self):
+        self.encabezamiento_edit.setEnabled(False)
+        self.pie_de_firma_edit.setEnabled(False)
+        self.coletilla_forma_de_pago_edit.setEnabled(False)
+    
+    def enable_all_fields(self):
+        self.encabezamiento_edit.setEnabled(True)
+        self.pie_de_firma_edit.setEnabled(True)
+        self.coletilla_forma_de_pago_edit.setEnabled(True)
+
+    def load_data(self):
+        thread_safe_db = Database()
+        presupuesto_from_db = thread_safe_db.session.query(Presupuesto).where(Presupuesto.clinica_id == config['config']['clinica_id']).first()
+
+        if presupuesto_from_db == None:
+            QMessageBox.critical(self, "Error", "No se ha encontrado la clínica en la base de datos. Existe el fichero config.toml? Existe la clínica en la base de datos?Existe clinica_id en el fichero?")
+            return
+        
+        self.encabezamiento_edit.setText(presupuesto_from_db.encabezamiento) # type: ignore
+        self.pie_de_firma_edit.setText(presupuesto_from_db.pie) # type: ignore
+        self.coletilla_forma_de_pago_edit.setText(presupuesto_from_db.forma_de_pago) # type: ignore
+
+    def save_data(self):
+        thread_safe_db = Database()
+
+        presupuesto_from_db = thread_safe_db.session.query(Presupuesto).where(Presupuesto.clinica_id == config['config']['clinica_id']).first()
+
+        if presupuesto_from_db == None:
+            QMessageBox.critical(self, "Error", "No se ha encontrado la clínica en la base de datos. Existe el fichero config.toml? Existe la clínica en la base de datos?Existe clinica_id en el fichero?")
+            return
+        
+        presupuesto_from_db.encabezamiento = self.encabezamiento_edit.toPlainText() # type: ignore
+        presupuesto_from_db.pie = self.pie_de_firma_edit.text() # type: ignore
+        presupuesto_from_db.forma_de_pago = self.coletilla_forma_de_pago_edit.toPlainText() # type: ignore
+
+        try:
+            thread_safe_db.session.flush()
+            thread_safe_db.session.commit()
+            thread_safe_db.session.close()
+        except Exception as e:
+            print("Commit failed: ", e)
+            thread_safe_db.session.rollback()
+        
+
+
 
 class FacturasPage(QWidget):
     def __init__(self) -> None:

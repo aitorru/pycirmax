@@ -1,0 +1,11 @@
+{
+	"nodes":[
+		{"type":"file","file":"tablas/Presupuestos.md","id":"cf760bbe186c8efd","x":-260,"y":-120,"width":400,"height":400},
+		{"type":"file","file":"tablas/Empresa.md","id":"0fae6a44686d153c","x":200,"y":-120,"width":400,"height":400},
+		{"id":"864b87875524289a","x":-20,"y":-700,"width":400,"height":400,"type":"file","file":"tablas/Clínicas.md"}
+	],
+	"edges":[
+		{"id":"a99b57978cbdf32a","fromNode":"cf760bbe186c8efd","fromSide":"top","toNode":"864b87875524289a","toSide":"bottom"},
+		{"id":"99ef6d1470339ea1","fromNode":"0fae6a44686d153c","fromSide":"top","toNode":"864b87875524289a","toSide":"bottom"}
+	]
+}
