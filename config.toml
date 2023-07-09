@@ -1,5 +1,5 @@
 [config]
-clinica_id = 2
+clinica_id = 1
 
 [database]
 name = "Cirmax"

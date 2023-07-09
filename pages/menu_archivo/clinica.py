@@ -13,7 +13,7 @@ class ClinicaPage(QWidget):
         self.setWindowTitle("Clinica")
 
         # Center the window on the screen
-        width = 300
+        width = 500
         height = 500
 
         screen_geometry = QApplication.desktop().screenGeometry()
@@ -41,20 +41,23 @@ class ClinicaPage(QWidget):
         # Add the order selector
         # Create two radio buttons 'codigo' and 'nombre'
         self.codigo_radio = QRadioButton("Codigo")
+        self.codigo_radio.setChecked(True)
         self.nombre_radio = QRadioButton("Nombre")
         self.orden_groupbox_layout.addWidget(self.codigo_radio)
         self.orden_groupbox_layout.addWidget(self.nombre_radio)
 
 
         # Create two buttons 'Edicion' and 'Salir'
-        self.edicion_button = QPushButton("Guardar")
+        self.edit_button = QPushButton("Editar")
+        self.save_button = QPushButton("Guardar")
         self.salir_button = QPushButton("Salir")
         self.top_frame_layout.addStretch(1)
-        self.top_frame_layout.addWidget(self.edicion_button)
+        self.top_frame_layout.addWidget(self.edit_button)
+        self.top_frame_layout.addWidget(self.save_button)
         self.top_frame_layout.addWidget(self.salir_button)
 
         # Add actions
-        self.edicion_button.clicked.connect(self.save_data)
+        self.save_button.clicked.connect(self.save_data)
         self.salir_button.clicked.connect(self.close) # type: ignore
 
         # Create a table
@@ -69,11 +72,28 @@ class ClinicaPage(QWidget):
         to_insert_data = self.clinicas_data[self.bottom_table.currentRow()]
 
         import toml
-        config['config']['clinica_id'] = to_insert_data.id
+        config['config']['clinica_id'] = to_insert_data.id # type: ignore
 
         # Save the config file
         with open('config.toml', 'w') as f:
             toml.dump(config, f)
+        
+    def order_data(self):
+        if self.codigo_radio.isChecked():
+            self.clinicas_data = sorted(self.clinicas_data, key=lambda x: x.letra) # type: ignore
+        elif self.nombre_radio.isChecked():
+            self.clinicas_data = sorted(self.clinicas_data, key=lambda x: x.nombre) # type: ignore
+        
+        self.bottom_table.clearContents()
+        self.bottom_table.setRowCount(len(self.clinicas_data))
+        self.bottom_table.setColumnCount(2)
+
+        self.bottom_table.setHorizontalHeaderLabels(["Codigo", "Nombre"])
+
+        for i, clinica in enumerate(self.clinicas_data):
+            self.bottom_table.setItem(i, 0, QTableWidgetItem(clinica.letra)) # type: ignore
+            self.bottom_table.setItem(i, 1, QTableWidgetItem(clinica.nombre)) # type: ignore
+
 
 
 
