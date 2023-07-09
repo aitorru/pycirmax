@@ -39,6 +39,7 @@ class MainWindow(QMainWindow):
         archivos_menu.addSeparator()
 
         clinicas_action = QAction("Clínicas", self)
+        clinicas_action.triggered.connect(self.open_clinicas)
         archivos_menu.addAction(clinicas_action)
 
         sociedades_action = QAction("Sociedades", self)
@@ -121,3 +122,8 @@ class MainWindow(QMainWindow):
         from pages.menu_archivo.config import ConfigPage
         self.configuracion_page = ConfigPage()
         self.configuracion_page.show()
+    
+    def open_clinicas(self):
+        from pages.menu_archivo.clinica import ClinicaPage
+        self.clinica_page = ClinicaPage()
+        self.clinica_page.show()

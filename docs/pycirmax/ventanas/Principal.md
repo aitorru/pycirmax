@@ -9,7 +9,7 @@
 ### Archivos
 ![[Pasted image 20230708173653.png]]
 
-- [ ] Configuración. Ver [[Configuración]].
+- [x] Configuración. Ver [[Configuración]].
 - [ ] Clínicas. Ver [[Clínicas]]
 - [ ] Sociedades. Ver [[Sociedades]].
 - [ ] Referidores. Ver [[Referidores]].

@@ -1,12 +1,34 @@
 {
   "collapse-filter": false,
   "search": "",
-  "showTags": true,
+  "showTags": false,
   "showAttachments": false,
   "hideUnresolved": false,
   "showOrphans": true,
   "collapse-color-groups": true,
-  "colorGroups": [],
+  "colorGroups": [
+    {
+      "query": "tag:#tablas",
+      "color": {
+        "a": 1,
+        "rgb": 14012484
+      }
+    },
+    {
+      "query": "tag:#ventanas",
+      "color": {
+        "a": 1,
+        "rgb": 4757226
+      }
+    },
+    {
+      "query": "tag:#todo",
+      "color": {
+        "a": 1,
+        "rgb": 16261152
+      }
+    }
+  ],
   "collapse-display": true,
   "showArrow": false,
   "textFadeMultiplier": -3,
@@ -17,6 +39,6 @@
   "repelStrength": 16.0706860706861,
   "linkStrength": 1,
   "linkDistance": 72,
-  "scale": 0.6346285676930602,
+  "scale": 0.4159979812034955,
   "close": true
 }

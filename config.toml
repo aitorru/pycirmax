@@ -1,9 +1,9 @@
 [config]
-clinica_id=1
+clinica_id = 2
 
 [database]
-name="Cirmax"
-user="cirmax"
-password="cirmaxp"
-host="localhost"
-port=3306
+name = "Cirmax"
+user = "cirmax"
+password = "cirmaxp"
+host = "localhost"
+port = 3306
