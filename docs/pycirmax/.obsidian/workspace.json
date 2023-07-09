@@ -118,7 +118,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "ventanas/Principal.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -135,7 +134,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "ventanas/Principal.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -157,9 +155,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "ventanas/Principal.md"
-              }
+              "state": {}
             }
           },
           {
@@ -171,12 +167,11 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 4
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -189,10 +184,11 @@
       "copilot:Copilot Chat": false
     }
   },
-  "active": "3d58a4f2b64c3ff4",
+  "active": "92c2347a4a606ce2",
   "lastOpenFiles": [
-    "tablas/Empresa.md",
+    "tablas/Clínicas.md",
     "ventanas/Principal.md",
+    "tablas/Empresa.md",
     "ventanas/Login.md",
     "tablas/Factura.md",
     "ventanas/Configuración.md",
@@ -206,7 +202,6 @@
     "Pasted image 20230708143949.png",
     "tablas/User.md",
     "ventanas",
-    "tablas/Clínicas.md",
     "tablas/Presupuestos.md",
     "Configuración del programa.md",
     "Conexión con la DB.md",

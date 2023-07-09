@@ -1,7 +1,8 @@
+from typing import List
 from PyQt5.QtWidgets import QWidget, QApplication, QHBoxLayout, QPushButton, QTabWidget, QVBoxLayout, QFrame, QTabBar, QFormLayout, QLabel, QLineEdit, QTextEdit, QMessageBox, QGroupBox, QRadioButton, QTableWidget, QTableWidgetItem
 from PyQt5.QtCore import QSize
 
-from db.db import db, Clinica, config
+from db.db import db, Clinica, config, Database
 
 class ClinicaPage(QWidget):
     def __init__(self) -> None:
@@ -56,13 +57,30 @@ class ClinicaPage(QWidget):
         self.top_frame_layout.addWidget(self.save_button)
         self.top_frame_layout.addWidget(self.salir_button)
 
+
+
         # Add actions
         self.save_button.clicked.connect(self.save_data)
         self.salir_button.clicked.connect(self.close) # type: ignore
+        self.edit_button.clicked.connect(self.edit_clinica)
 
         # Create a table
         self.bottom_table = QTableWidget()
         self.layout.addWidget(self.bottom_table)
+
+        self.bottom_frame = QFrame()
+        self.bottom_frame_layout = QHBoxLayout()
+        self.bottom_frame.setLayout(self.bottom_frame_layout)
+
+        self.add_button = QPushButton("Añadir")
+        self.bottom_frame_layout.addWidget(self.add_button)
+        self.add_button.clicked.connect(self.add_clinica)
+
+        self.delete_button = QPushButton("Eliminar")
+        self.bottom_frame_layout.addWidget(self.delete_button)
+        self.delete_button.clicked.connect(self.delete_clinica)
+
+        self.layout.addWidget(self.bottom_frame)
     
     def close(self):
         return super().close()
@@ -108,4 +126,165 @@ class ClinicaPage(QWidget):
         for i, clinica in enumerate(self.clinicas_data):
             self.bottom_table.setItem(i, 0, QTableWidgetItem(clinica.letra)) # type: ignore
             self.bottom_table.setItem(i, 1, QTableWidgetItem(clinica.nombre)) # type: ignore
+    
+    def edit_clinica(self):
+        clinica = self.clinicas_data[self.bottom_table.currentRow()]
+
+        self.edit_clinica = EditClinica(clinica, self)
+        self.edit_clinica.show()
+    
+    def add_clinica(self):
+        self.add_clinica = AddClinica(self)
+        self.add_clinica.show()
+
+    def delete_clinica(self):
+        clinica = self.clinicas_data[self.bottom_table.currentRow()]
+
+        thread_safe_db = Database()
+
+        # Query the database for the clinica
+        clinica = thread_safe_db.session.query(Clinica).filter_by(id=clinica.id).first()
+
+        # Delete the clinica
+        try:
+            thread_safe_db.session.delete(clinica)
+            thread_safe_db.session.flush()
+            thread_safe_db.session.commit()
+            thread_safe_db.session.close()
+        except Exception as e:
+            print("Commit failed: ", e)
+            thread_safe_db.session.rollback()
+        self.load_data()
+
         
+class EditClinica(QWidget):
+    def __init__(self, clinica: Clinica, upper) -> None:
+        super().__init__()
+        self.clinica = clinica
+        self.upper = upper
+        self.initUI()
+    
+    def initUI(self):
+        self.layout = QHBoxLayout() # type: ignore
+        self.setLayout(self.layout)
+
+        self.setWindowTitle("Editar Clinica")
+
+        # Center the window on the screen
+        width = 800
+        height = 50
+
+        screen_geometry = QApplication.desktop().screenGeometry()
+        x = (screen_geometry.width() - width) / 2
+        y = (screen_geometry.height() - height) / 2
+
+        self.setGeometry(int(x), int(y), width, height)
+
+        # Create a label and a line edit for 'letra; and 'nombre'
+        self.letra_label = QLabel("Letra")
+        self.letra_lineedit = QLineEdit()
+        
+        self.nombre_label = QLabel("Nombre")
+        self.nombre_lineedit = QLineEdit()
+
+        self.letra_lineedit.setText(self.clinica.letra) # type: ignore
+        self.nombre_lineedit.setText(self.clinica.nombre) # type: ignore
+
+        self.layout.addWidget(self.letra_label)
+        self.layout.addWidget(self.letra_lineedit)
+        self.layout.addWidget(self.nombre_label)
+        self.layout.addWidget(self.nombre_lineedit)
+
+        # Create a button 'Guardar'
+        self.save_button = QPushButton("Guardar")
+        self.layout.addWidget(self.save_button)
+
+        # Add actions
+        self.save_button.clicked.connect(self.save_data)
+    
+    def save_data(self):
+        thread_safe_db = Database()
+
+        clinica_from_db = thread_safe_db.session.query(Clinica).filter_by(id=self.clinica.id).first() # type: ignore
+
+        if clinica_from_db is None:
+            QMessageBox.critical(self, "Error", "No se ha encontrado la clinica")
+            return
+
+        clinica_from_db.letra = self.letra_lineedit.text() # type: ignore
+        clinica_from_db.nombre = self.nombre_lineedit.text() # type: ignore
+
+        try:
+            thread_safe_db.session.flush()
+            thread_safe_db.session.commit()
+            thread_safe_db.session.close()
+            self.upper.load_data()
+            self.close()
+        except Exception as e:
+            print("Commit failed: ", e)
+            thread_safe_db.session.rollback()
+            
+
+
+
+class AddClinica(QWidget):
+    def __init__(self,  upper) -> None:
+        super().__init__()
+        self.upper = upper
+        self.initUI()
+    
+    def initUI(self):
+        self.layout = QHBoxLayout() # type: ignore
+        self.setLayout(self.layout)
+
+        self.setWindowTitle("Añadir Clinica")
+
+        # Center the window on the screen
+        width = 800
+        height = 50
+
+        screen_geometry = QApplication.desktop().screenGeometry()
+        x = (screen_geometry.width() - width) / 2
+        y = (screen_geometry.height() - height) / 2
+
+        self.setGeometry(int(x), int(y), width, height)
+
+        # Create a label and a line edit for 'letra; and 'nombre'
+        self.letra_label = QLabel("Letra")
+        self.letra_lineedit = QLineEdit()
+        
+        self.nombre_label = QLabel("Nombre")
+        self.nombre_lineedit = QLineEdit()
+
+        self.layout.addWidget(self.letra_label)
+        self.layout.addWidget(self.letra_lineedit)
+        self.layout.addWidget(self.nombre_label)
+        self.layout.addWidget(self.nombre_lineedit)
+
+        # Create a button 'Guardar'
+        self.save_button = QPushButton("Guardar")
+        self.layout.addWidget(self.save_button)
+
+        # Add actions
+        self.save_button.clicked.connect(self.save_data)
+    
+    def save_data(self):
+        thread_safe_db = Database()
+
+        # Save a new 'clinica' to the database
+        clinica = Clinica(
+            letra=self.letra_lineedit.text(),
+            nombre=self.nombre_lineedit.text()
+        )
+
+        try:
+            thread_safe_db.session.add(clinica)
+            thread_safe_db.session.flush()
+            thread_safe_db.session.commit()
+            thread_safe_db.session.close()
+            self.upper.load_data()
+            self.close()
+        except Exception as e:
+            print("Commit failed: ", e)
+            thread_safe_db.session.rollback()
+
