@@ -104,6 +104,13 @@ class Clinica(Base):
     letra = Column(String)
     nombre = Column(String)
 
+class Sociedad(Base):
+    __tablename__ = 'sociedad'
+
+    id = Column(Integer, primary_key=True)
+    codigo = Column(String)
+    nombre = Column(String)
+
 class _State:
     def __init__(self):
         self.usuario_activo: User | None = None
