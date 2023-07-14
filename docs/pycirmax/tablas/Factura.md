@@ -14,4 +14,4 @@ class Factura(Base):
 ```
 
 ### `clinicas.id`
-Ver [[Clínicas]].
+Ver [[tablas/Clínicas]].

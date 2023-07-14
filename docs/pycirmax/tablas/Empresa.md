@@ -21,4 +21,4 @@ class Empresa(Base):
 ```
 
 ### `clinicas.id`
-Ver [[Clínicas]].
+Ver [[tablas/Clínicas]].

@@ -60,7 +60,6 @@ class ConfigPage(QWidget):
         # Now create QTabWidget and add the entries 'Empresa' 'Presupuestos' and 'Facturas'
         # to it. Then add the QTabWidget to the layout
         self.tab_widget = QTabWidget()\
-        # TODO: This does not work
         # self.tab_widget.setTabBar(CustomTabBar())  # Use the custom tab bar
         self.tab_widget.addTab(self.empresa, "Empresa")
         self.tab_widget.addTab(self.presupuestos, "Presupuestos")
@@ -75,13 +74,11 @@ class ConfigPage(QWidget):
         self.cancelar_button.setEnabled(True)
         self.salir_button.setEnabled(False)
 
-        # TODO: Add the rest
         self.empresa.enable_all_fields()
         self.presupuestos.enable_all_fields()
         self.facturas.enable_all_fields()
     
     def disable_editing(self):
-        # TODO: Add the rest
         self.editar_button.setEnabled(True)
         self.validar_button.setEnabled(False)
         self.cancelar_button.setEnabled(False)
@@ -96,7 +93,6 @@ class ConfigPage(QWidget):
 
     
     def save_data(self):
-        # TODO: Add the rest
         self.empresa.save_data()
         self.presupuestos.save_data()
         self.facturas.save_data()

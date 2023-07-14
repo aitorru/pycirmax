@@ -2,3 +2,4 @@ pyqt5
 SQLAlchemy
 psycopg2-binary
 toml
+fpdf

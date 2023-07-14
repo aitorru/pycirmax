@@ -2,16 +2,17 @@ from typing import List
 from PyQt5.QtWidgets import QWidget, QApplication, QHBoxLayout, QPushButton, QTabWidget, QVBoxLayout, QFrame, QTabBar, QFormLayout, QLabel, QLineEdit, QTextEdit, QMessageBox, QGroupBox, QRadioButton, QTableWidget, QTableWidgetItem
 from PyQt5.QtCore import QSize
 
-from db.db import db, Clinica, config, Database
+from db.db import db, Sociedad, config, Database
+from utils.utils import open_file
 
-class ClinicaPage(QWidget):
+class SociedadPage(QWidget):
     def __init__(self) -> None:
         super().__init__()
         self.initUI()
         self.load_data()
     
     def initUI(self):
-        self.setWindowTitle("Clinica")
+        self.setWindowTitle("Sociedades")
 
         # Center the window on the screen
         width = 500
@@ -50,17 +51,17 @@ class ClinicaPage(QWidget):
 
         # Create two buttons 'Edicion' and 'Salir'
         self.edit_button = QPushButton("Editar")
-        self.save_button = QPushButton("Guardar")
+        self.listar_button = QPushButton("Listar")
         self.salir_button = QPushButton("Salir")
         self.top_frame_layout.addStretch(1)
         self.top_frame_layout.addWidget(self.edit_button)
-        self.top_frame_layout.addWidget(self.save_button)
+        self.top_frame_layout.addWidget(self.listar_button)
         self.top_frame_layout.addWidget(self.salir_button)
 
 
 
         # Add actions
-        self.save_button.clicked.connect(self.save_data)
+        self.listar_button.clicked.connect(self.listar_data)
         self.salir_button.clicked.connect(self.close) # type: ignore
         self.edit_button.clicked.connect(self.edit_clinica)
 
@@ -85,51 +86,78 @@ class ClinicaPage(QWidget):
     def close(self):
         return super().close()
 
-    def save_data(self):
+    def listar_data(self):
+        from fpdf import FPDF
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font('Arial', 'B', 11)
+        pdf.line(10, 10, 200, 10)
+        pdf.line(10, 11, 200, 11)
+        pdf.cell(10, 10, 'Listado de sociades')
+        import datetime
+        current_date = datetime.datetime.now()
+        pdf.set_xy(150, 10)
+        pdf.cell(10, 10, f'Fecha: {current_date.day}/{current_date.month}/{current_date.year}')
+        pdf.line(10, 18, 200, 18)
+        pdf.set_xy(70, 25)
+        pdf.cell(10, 10, 'Codigo')
+        pdf.line(70, 33, 86, 33)
+        pdf.set_xy(100, 25)
+        pdf.cell(10, 10, 'Nombre')
+        pdf.line(100, 33, 117, 33)
+        for i, sociedad in enumerate(self.sociedades_data):
+            pdf.set_xy(70, 30 + (i * 4))
+            pdf.cell(10, 13, f'{sociedad.codigo}')
+            pdf.set_xy(100, 30 + (i * 4))
+            pdf.cell(10, 13, f'{sociedad.nombre}')
 
-        to_insert_data = self.clinicas_data[self.bottom_table.currentRow()]
+        pdf.line(10, 30 + (len(self.sociedades_data) * 4) + 10, 200, 30 + (len(self.sociedades_data) * 4) + 10)
 
-        import toml
-        config['config']['clinica_id'] = to_insert_data.id # type: ignore
+        pdf.set_xy(10, 30 + (len(self.sociedades_data) * 4) + 10)
+        pdf.cell(10, 10, f'Total: {len(self.sociedades_data)}')
 
-        # Save the config file
-        with open('config.toml', 'w') as f:
-            toml.dump(config, f)
+        pdf.line(10, 30 + (len(self.sociedades_data) * 4) + 20, 200, 30 + (len(self.sociedades_data) * 4) + 20)
+
+        try:
+            pdf.output('sociedades.pdf', 'F')
+            QMessageBox.information(self, "Listado", "Listado generado correctamente")
+            open_file('sociedades.pdf')
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Error al generar el listado: {e}")
         
     def order_data(self):
         if self.codigo_radio.isChecked():
-            self.clinicas_data = sorted(self.clinicas_data, key=lambda x: x.letra) # type: ignore
+            self.sociedades_data = sorted(self.sociedades_data, key=lambda x: x.codigo) # type: ignore
         elif self.nombre_radio.isChecked():
-            self.clinicas_data = sorted(self.clinicas_data, key=lambda x: x.nombre) # type: ignore
+            self.sociedades_data = sorted(self.sociedades_data, key=lambda x: x.nombre) # type: ignore
         
         self.bottom_table.clearContents()
-        self.bottom_table.setRowCount(len(self.clinicas_data))
+        self.bottom_table.setRowCount(len(self.sociedades_data))
         self.bottom_table.setColumnCount(2)
 
-        self.bottom_table.setHorizontalHeaderLabels(["Código", "Nombre"])
+        self.bottom_table.setHorizontalHeaderLabels(["Codigo", "Nombre"])
 
-        for i, clinica in enumerate(self.clinicas_data):
-            self.bottom_table.setItem(i, 0, QTableWidgetItem(clinica.letra)) # type: ignore
-            self.bottom_table.setItem(i, 1, QTableWidgetItem(clinica.nombre)) # type: ignore
+        for i, sociedad in enumerate(self.sociedades_data):
+            self.bottom_table.setItem(i, 0, QTableWidgetItem(sociedad.codigo)) # type: ignore
+            self.bottom_table.setItem(i, 1, QTableWidgetItem(sociedad.nombre)) # type: ignore
 
 
 
 
     def load_data(self):
-        self.clinicas_data = db.session.query(Clinica).order_by(Clinica.letra).all()
-        
+        self.sociedades_data = db.session.query(Sociedad).order_by(Sociedad.codigo).all()
 
-        self.bottom_table.setRowCount(len(self.clinicas_data))
+        self.bottom_table.setRowCount(len(self.sociedades_data))
         self.bottom_table.setColumnCount(2)
 
         self.bottom_table.setHorizontalHeaderLabels(["Código", "Nombre"])
 
-        for i, clinica in enumerate(self.clinicas_data):
-            self.bottom_table.setItem(i, 0, QTableWidgetItem(clinica.letra)) # type: ignore
-            self.bottom_table.setItem(i, 1, QTableWidgetItem(clinica.nombre)) # type: ignore
+        for i, sociedad in enumerate(self.sociedades_data):
+            self.bottom_table.setItem(i, 0, QTableWidgetItem(sociedad.codigo)) # type: ignore
+            self.bottom_table.setItem(i, 1, QTableWidgetItem(sociedad.nombre)) # type: ignore
     
     def edit_clinica(self):
-        clinica = self.clinicas_data[self.bottom_table.currentRow()]
+        clinica = self.sociedades_data[self.bottom_table.currentRow()]
 
         self.edit_clinica = EditClinica(clinica, self)
         self.edit_clinica.show()
@@ -139,10 +167,11 @@ class ClinicaPage(QWidget):
         self.add_clinica.show()
 
     def delete_clinica(self):
+
         # Create a confirm dialog
         confirm = QMessageBox()
         confirm.setWindowTitle("Eliminar")
-        confirm.setText(f"¿Estás seguro de que quieres eliminar la clínica {self.clinicas_data[self.bottom_table.currentRow()].nombre}?")
+        confirm.setText(f"¿Estás seguro de que quieres eliminar la sociedad {self.sociedades_data[self.bottom_table.currentRow()].nombre}?")
 
         confirm.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         confirm.setDefaultButton(QMessageBox.No)
@@ -151,17 +180,16 @@ class ClinicaPage(QWidget):
         if confirm.exec_() == QMessageBox.No:
             return
 
-
-        clinica = self.clinicas_data[self.bottom_table.currentRow()]
+        sociedad = self.sociedades_data[self.bottom_table.currentRow()]
 
         thread_safe_db = Database()
 
         # Query the database for the clinica
-        clinica = thread_safe_db.session.query(Clinica).filter_by(id=clinica.id).first()
+        sociedad = thread_safe_db.session.query(Sociedad).filter_by(id=sociedad.id).first()
 
         # Delete the clinica
         try:
-            thread_safe_db.session.delete(clinica)
+            thread_safe_db.session.delete(sociedad)
             thread_safe_db.session.flush()
             thread_safe_db.session.commit()
             thread_safe_db.session.close()
@@ -173,9 +201,9 @@ class ClinicaPage(QWidget):
 
         
 class EditClinica(QWidget):
-    def __init__(self, clinica: Clinica, upper) -> None:
+    def __init__(self, sociedad: Sociedad, upper) -> None:
         super().__init__()
-        self.clinica = clinica
+        self.sociedad = sociedad
         self.upper = upper
         self.initUI()
     
@@ -196,17 +224,17 @@ class EditClinica(QWidget):
         self.setGeometry(int(x), int(y), width, height)
 
         # Create a label and a line edit for 'letra; and 'nombre'
-        self.letra_label = QLabel("Letra")
-        self.letra_lineedit = QLineEdit()
+        self.codigo_label = QLabel("Código")
+        self.codigo_lineedit = QLineEdit()
         
         self.nombre_label = QLabel("Nombre")
         self.nombre_lineedit = QLineEdit()
 
-        self.letra_lineedit.setText(self.clinica.letra) # type: ignore
-        self.nombre_lineedit.setText(self.clinica.nombre) # type: ignore
+        self.codigo_lineedit.setText(self.sociedad.codigo) # type: ignore
+        self.nombre_lineedit.setText(self.sociedad.nombre) # type: ignore
 
-        self.layout.addWidget(self.letra_label)
-        self.layout.addWidget(self.letra_lineedit)
+        self.layout.addWidget(self.codigo_label)
+        self.layout.addWidget(self.codigo_lineedit)
         self.layout.addWidget(self.nombre_label)
         self.layout.addWidget(self.nombre_lineedit)
 
@@ -220,14 +248,14 @@ class EditClinica(QWidget):
     def save_data(self):
         thread_safe_db = Database()
 
-        clinica_from_db = thread_safe_db.session.query(Clinica).filter_by(id=self.clinica.id).first() # type: ignore
+        sociedad_from_db = thread_safe_db.session.query(Sociedad).filter_by(id=self.sociedad.id).first() # type: ignore
 
-        if clinica_from_db is None:
-            QMessageBox.critical(self, "Error", "No se ha encontrado la clinica")
+        if sociedad_from_db is None:
+            QMessageBox.critical(self, "Error", "No se ha encontrado la sociedad")
             return
 
-        clinica_from_db.letra = self.letra_lineedit.text() # type: ignore
-        clinica_from_db.nombre = self.nombre_lineedit.text() # type: ignore
+        sociedad_from_db.codigo = self.codigo_lineedit.text() # type: ignore
+        sociedad_from_db.nombre = self.nombre_lineedit.text() # type: ignore
 
         try:
             thread_safe_db.session.flush()
@@ -266,7 +294,7 @@ class AddClinica(QWidget):
         self.setGeometry(int(x), int(y), width, height)
 
         # Create a label and a line edit for 'letra; and 'nombre'
-        self.letra_label = QLabel("Letra")
+        self.letra_label = QLabel("Código")
         self.letra_lineedit = QLineEdit()
         
         self.nombre_label = QLabel("Nombre")
@@ -287,14 +315,14 @@ class AddClinica(QWidget):
     def save_data(self):
         thread_safe_db = Database()
 
-        # Save a new 'clinica' to the database
-        clinica = Clinica(
-            letra=self.letra_lineedit.text(),
+        # Save a new 'sociedad' to the database
+        sociedad = Sociedad(
+            codigo=self.letra_lineedit.text(),
             nombre=self.nombre_lineedit.text()
         )
 
         try:
-            thread_safe_db.session.add(clinica)
+            thread_safe_db.session.add(sociedad)
             thread_safe_db.session.flush()
             thread_safe_db.session.commit()
             thread_safe_db.session.close()

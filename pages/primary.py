@@ -43,6 +43,7 @@ class MainWindow(QMainWindow):
         archivos_menu.addAction(clinicas_action)
 
         sociedades_action = QAction("Sociedades", self)
+        sociedades_action.triggered.connect(self.open_sociedades)
         archivos_menu.addAction(sociedades_action)
 
         referidores_action = QAction("Referidores", self)
@@ -127,3 +128,8 @@ class MainWindow(QMainWindow):
         from pages.menu_archivo.clinica import ClinicaPage
         self.clinica_page = ClinicaPage()
         self.clinica_page.show()
+    
+    def open_sociedades(self):
+        from pages.menu_archivo.sociedades import SociedadPage
+        self.sociedad_page = SociedadPage()
+        self.sociedad_page.show()

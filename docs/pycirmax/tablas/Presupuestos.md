@@ -14,4 +14,4 @@ class Presupuesto(Base):
 ```
 
 ### `clinicas.id`
-Ver [[Clínicas]].
+Ver [[tablas/Clínicas]].
