@@ -20,7 +20,12 @@ class LoginPage(QWidget):
         width = 400
         height = 300
 
-        screen_geometry = QApplication.desktop().screenGeometry()
+        desktop = QApplication.desktop()
+
+        if desktop is None:
+            sys.exit(1)
+
+        screen_geometry = desktop.screenGeometry() # type: ignore
         x = (screen_geometry.width() - width) / 2
         y = (screen_geometry.height() - height) / 2
 

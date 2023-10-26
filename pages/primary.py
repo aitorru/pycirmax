@@ -17,21 +17,21 @@ class MainWindow(QMainWindow):
         width = 800
         height = 600
 
-        screen_geometry = QApplication.desktop().screenGeometry()
+        screen_geometry = QApplication.desktop().screenGeometry() # type: ignore
         x = (screen_geometry.width() - width) / 2
         y = (screen_geometry.height() - height) / 2
 
         self.setGeometry(int(x), int(y), width, height)
 
         # Create the status bar
-        self.statusBar().showMessage(f'Usuario: {usuario_activo.get_nombre_usuario()}')
+        self.statusBar().showMessage(f'Usuario: {usuario_activo.get_nombre_usuario()}') # type: ignore
         
 
         # Create the top menu bar
         menubar = self.menuBar()
 
         archivos_menu = QMenu("Archivos", self)
-        menubar.addMenu(archivos_menu)
+        menubar.addMenu(archivos_menu) # type: ignore
 
         configuracion_action = QAction("Configuración", self)
         configuracion_action.triggered.connect(self.open_configuracion)
@@ -47,6 +47,7 @@ class MainWindow(QMainWindow):
         archivos_menu.addAction(sociedades_action)
 
         referidores_action = QAction("Referidores", self)
+        referidores_action.triggered.connect(self.open_referidores)
         archivos_menu.addAction(referidores_action)
 
         pacientes_action = QAction("Pacientes", self)
@@ -68,15 +69,15 @@ class MainWindow(QMainWindow):
         archivos_menu.addAction(salir_action)
 
         edicion_menu = QMenu("Edición", self)
-        menubar.addMenu(edicion_menu)
+        menubar.addMenu(edicion_menu) # type: ignore
         edicion_menu.setDisabled(True)
 
         consultas_menu = QMenu("Consultas", self)
-        menubar.addMenu(consultas_menu)
+        menubar.addMenu(consultas_menu) # type: ignore
         consultas_menu.setDisabled(True)
 
         utilidades_menu = QMenu("Utilidades", self)
-        menubar.addMenu(utilidades_menu)
+        menubar.addMenu(utilidades_menu) # type: ignore
 
         ordenar_action = QAction("Ordenar", self)
         utilidades_menu.addAction(ordenar_action)
@@ -105,7 +106,7 @@ class MainWindow(QMainWindow):
         
 
         ayuda_menu = QMenu("Ayuda", self)
-        menubar.addMenu(ayuda_menu)
+        menubar.addMenu(ayuda_menu) # type: ignore
 
 
     def close(self):
@@ -133,3 +134,8 @@ class MainWindow(QMainWindow):
         from pages.menu_archivo.sociedades import SociedadPage
         self.sociedad_page = SociedadPage()
         self.sociedad_page.show()
+
+    def open_referidores(self):
+        from pages.menu_archivo.referidores import ReferidorPage
+        self.referidor_page = ReferidorPage()
+        self.referidor_page.show()

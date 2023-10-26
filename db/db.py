@@ -1,6 +1,7 @@
 from sqlalchemy import Column, ForeignKey, Integer, String, create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session, relationship
 from sqlalchemy.ext.declarative import declarative_base
+import logging
 
 Base = declarative_base()
 
@@ -11,8 +12,24 @@ with open('config.toml', 'r') as f:
 
 class Database:
     def __init__(self, db_name=config['database']['name'], user=config['database']['user'], password=config['database']['password'], host=config['database']['host'], port=config['database']['port']):
-        self.engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{db_name}')
-        self._session = scoped_session(sessionmaker(bind=self.engine))
+        try:
+            self.engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{db_name}')
+            self._session = scoped_session(sessionmaker(bind=self.engine))
+            # If tables dont exist, create them
+            self.create_tables()
+        except Exception as e:
+            logging.error("Database connection error: %s", e)
+            # Use qt to create an error dialog
+            from PyQt5.QtWidgets import QMessageBox
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("Error de conexión con la base de datos")
+            msg.setInformativeText("No se pudo conectar con la base de datos. Compruebe que el servidor de base de datos está en funcionamiento.")
+            msg.setWindowTitle("Error")
+            msg.exec_()
+            # Exit the app
+            import sys
+            sys.exit(1)
 
     @property
     def session(self):
@@ -110,6 +127,14 @@ class Sociedad(Base):
     id = Column(Integer, primary_key=True)
     codigo = Column(String)
     nombre = Column(String)
+
+class Referidor(Base):
+    __tablename__ = 'referidor'
+
+    id = Column(Integer, primary_key=True)
+    codigo = Column(String)
+    nombre = Column(String)
+
 
 class _State:
     def __init__(self):
