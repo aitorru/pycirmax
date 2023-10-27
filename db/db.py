@@ -135,7 +135,15 @@ class Referidor(Base):
     codigo = Column(String)
     nombre = Column(String)
 
+class Paciente(Base):
+    __tablename__ = 'paciente'
 
+    id = Column(Integer, primary_key=True)
+    codigo = Column(String)
+    nombre = Column(String)
+    domicilio = Column(String)
+    cp = Column(String)
+    poblacion = Column(String)
 class _State:
     def __init__(self):
         self.usuario_activo: User | None = None

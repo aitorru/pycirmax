@@ -51,6 +51,7 @@ class MainWindow(QMainWindow):
         archivos_menu.addAction(referidores_action)
 
         pacientes_action = QAction("Pacientes", self)
+        pacientes_action.triggered.connect(self.open_pacientes)
         archivos_menu.addAction(pacientes_action)
 
         conceptos_action = QAction("Conceptos", self)
@@ -139,3 +140,6 @@ class MainWindow(QMainWindow):
         from pages.menu_archivo.referidores import ReferidorPage
         self.referidor_page = ReferidorPage()
         self.referidor_page.show()
+
+    def open_pacientes(self):
+        pass

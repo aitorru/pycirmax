@@ -14,7 +14,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "ventanas/Principal.md",
+                "file": "Referidores.md",
                 "mode": "source",
                 "source": false
               }
@@ -28,8 +28,8 @@
               "state": {
                 "file": "tablas/Mapa tablas.canvas",
                 "viewState": {
-                  "x": 117.43329002209089,
-                  "y": -158.4283393915189,
+                  "x": 177.08786818876817,
+                  "y": -153.45712454429585,
                   "zoom": -0.8333333333333334
                 }
               }
@@ -50,6 +50,16 @@
               "type": "graph",
               "state": {},
               "pinned": true
+            }
+          },
+          {
+            "id": "71d62471c7cfddf1",
+            "type": "leaf",
+            "state": {
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.3.7"
+              }
             }
           },
           {
@@ -199,8 +209,10 @@
   },
   "active": "92c2347a4a606ce2",
   "lastOpenFiles": [
-    "ventanas/Principal.md",
+    "Referidores.md",
+    "tablas/Mapa tablas.canvas",
     "ventanas/Clínicas.md",
+    "ventanas/Principal.md",
     "ventanas/Cambiar clave.md",
     "tablas/Clínicas.md",
     "tablas/Empresa.md",
@@ -210,7 +222,6 @@
     "TODO FIX.md",
     "Pasted image 20230708173800.png",
     "Pasted image 20230708173653.png",
-    "tablas/Mapa tablas.canvas",
     "Pasted image 20230708144245.png",
     "Pasted image 20230708144152.png",
     "Pasted image 20230708143949.png",
