@@ -14,24 +14,9 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "ventanas/Principal.md",
+                "file": "tablas/User.md",
                 "mode": "source",
                 "source": false
-              }
-            }
-          },
-          {
-            "id": "f95dfe531bbdc317",
-            "type": "leaf",
-            "state": {
-              "type": "canvas",
-              "state": {
-                "file": "tablas/Mapa tablas.canvas",
-                "viewState": {
-                  "x": 117.43329002209089,
-                  "y": -158.4283393915189,
-                  "zoom": -0.8333333333333334
-                }
               }
             }
           }
@@ -53,18 +38,24 @@
             }
           },
           {
-            "id": "8bcc9c29285be77f",
+            "id": "f95dfe531bbdc317",
             "type": "leaf",
+            "pinned": true,
             "state": {
-              "type": "markdown",
+              "type": "canvas",
               "state": {
-                "file": "ventanas/Cambiar clave.md",
-                "mode": "source",
-                "source": false
-              }
+                "file": "tablas/Mapa tablas.canvas",
+                "viewState": {
+                  "x": 192.7675551252962,
+                  "y": -171.98780700638642,
+                  "zoom": -0.8333333333333334
+                }
+              },
+              "pinned": true
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -130,6 +121,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "tablas/Mapa tablas.canvas",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -146,6 +138,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "tablas/Mapa tablas.canvas",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -167,7 +160,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "tablas/Mapa tablas.canvas"
+              }
             }
           },
           {
@@ -197,24 +192,25 @@
       "copilot:Copilot Chat": false
     }
   },
-  "active": "92c2347a4a606ce2",
+  "active": "f95dfe531bbdc317",
   "lastOpenFiles": [
-    "ventanas/Principal.md",
-    "ventanas/Clínicas.md",
+    "tablas/User.md",
+    "tablas/Mapa tablas.canvas",
     "ventanas/Cambiar clave.md",
+    "ventanas/Login.md",
+    "ventanas/Configuración.md",
+    "Referidores.md",
+    "ventanas/Clínicas.md",
+    "ventanas/Principal.md",
     "tablas/Clínicas.md",
     "tablas/Empresa.md",
-    "ventanas/Login.md",
     "tablas/Factura.md",
-    "ventanas/Configuración.md",
     "TODO FIX.md",
     "Pasted image 20230708173800.png",
     "Pasted image 20230708173653.png",
-    "tablas/Mapa tablas.canvas",
     "Pasted image 20230708144245.png",
     "Pasted image 20230708144152.png",
     "Pasted image 20230708143949.png",
-    "tablas/User.md",
     "ventanas",
     "tablas/Presupuestos.md",
     "Configuración del programa.md",

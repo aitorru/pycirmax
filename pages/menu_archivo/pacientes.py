@@ -1,21 +1,19 @@
-from typing import List
-from PyQt5.QtWidgets import QWidget, QApplication, QHBoxLayout, QPushButton, QTabWidget, QVBoxLayout, QFrame, QTabBar, QFormLayout, QLabel, QLineEdit, QTextEdit, QMessageBox, QGroupBox, QRadioButton, QTableWidget, QTableWidgetItem
-from PyQt5.QtCore import QSize
+from PyQt5.QtWidgets import QWidget, QApplication, QHBoxLayout, QPushButton, QVBoxLayout, QFrame, QLabel, QLineEdit, QMessageBox, QGroupBox, QRadioButton, QTableWidget, QTableWidgetItem
 
-from db.db import db, Sociedad, config, Database
+from db.db import db, Paciente, Database
 from utils.utils import open_file
 
-class SociedadPage(QWidget):
+class PacientePage(QWidget):
     def __init__(self) -> None:
         super().__init__()
         self.initUI()
         self.load_data()
     
     def initUI(self):
-        self.setWindowTitle("Sociedades")
+        self.setWindowTitle("Pacientes")
 
         # Center the window on the screen
-        width = 500
+        width = 700
         height = 500
 
         screen_geometry = QApplication.desktop().screenGeometry() # type: ignore
@@ -47,6 +45,11 @@ class SociedadPage(QWidget):
         self.nombre_radio = QRadioButton("Nombre")
         self.orden_groupbox_layout.addWidget(self.codigo_radio)
         self.orden_groupbox_layout.addWidget(self.nombre_radio)
+        
+        # If the user clicks on the 'codigo' radio button, order the data by 'codigo'
+        # If the user clicks on the 'nombre' radio button, order the data by 'nombre'
+        self.codigo_radio.clicked.connect(self.order_data)
+        self.nombre_radio.clicked.connect(self.order_data)
 
 
         # Create two buttons 'Edicion' and 'Salir'
@@ -63,7 +66,7 @@ class SociedadPage(QWidget):
         # Add actions
         self.listar_button.clicked.connect(self.listar_data)
         self.salir_button.clicked.connect(self.close) # type: ignore
-        self.edit_button.clicked.connect(self.edit_clinica)
+        self.edit_button.clicked.connect(self.edit_paciente)
 
         # Create a table
         self.bottom_table = QTableWidget()
@@ -75,11 +78,11 @@ class SociedadPage(QWidget):
 
         self.add_button = QPushButton("Añadir")
         self.bottom_frame_layout.addWidget(self.add_button)
-        self.add_button.clicked.connect(self.add_clinica)
+        self.add_button.clicked.connect(self.add_paciente)
 
         self.delete_button = QPushButton("Eliminar")
         self.bottom_frame_layout.addWidget(self.delete_button)
-        self.delete_button.clicked.connect(self.delete_clinica)
+        self.delete_button.clicked.connect(self.delete_paciente)
 
         self.layout.addWidget(self.bottom_frame)
     
@@ -93,85 +96,108 @@ class SociedadPage(QWidget):
         pdf.set_font('Arial', 'B', 11)
         pdf.line(10, 10, 200, 10)
         pdf.line(10, 11, 200, 11)
-        pdf.cell(10, 10, 'Listado de sociades')
+        pdf.cell(10, 10, 'Listado de pacientes')
         import datetime
         current_date = datetime.datetime.now()
         pdf.set_xy(150, 10)
         pdf.cell(10, 10, f'Fecha: {current_date.day}/{current_date.month}/{current_date.year}')
         pdf.line(10, 18, 200, 18)
-        pdf.set_xy(70, 25)
+        pdf.set_xy(30, 25)
         pdf.cell(10, 10, 'Codigo')
-        pdf.line(70, 33, 86, 33)
-        pdf.set_xy(100, 25)
+        pdf.line(30, 33, 86, 33)
+        pdf.set_xy(60, 25)
         pdf.cell(10, 10, 'Nombre')
-        pdf.line(100, 33, 117, 33)
-        for i, sociedad in enumerate(self.sociedades_data):
-            pdf.set_xy(70, 30 + (i * 4))
-            pdf.cell(10, 13, f'{sociedad.codigo}')
-            pdf.set_xy(100, 30 + (i * 4))
-            pdf.cell(10, 13, f'{sociedad.nombre}')
+        pdf.line(60, 33, 117, 33)
+        pdf.set_xy(90, 25)
+        pdf.cell(10, 10, 'Domicilio')
+        pdf.line(90, 33, 146, 33)
+        pdf.set_xy(120, 25)
+        pdf.cell(10, 10, 'C. Postal')
+        pdf.line(120, 33, 176, 33)
+        pdf.set_xy(150, 25)
+        pdf.cell(10, 10, 'Poblacion')
+        pdf.line(150, 33, 200, 33)
+        for i, paciente in enumerate(self.pacientes_data):
+            pdf.set_xy(30, 30 + (i * 4))
+            pdf.cell(10, 13, f'{paciente.codigo}')
+            pdf.set_xy(60, 30 + (i * 4))
+            pdf.cell(10, 13, f'{paciente.nombre}')
+            pdf.set_xy(90, 30 + (i * 4))
+            pdf.cell(10, 13, f'{paciente.domicilio}')
+            pdf.set_xy(120, 30 + (i * 4))
+            pdf.cell(10, 13, f'{paciente.cp}')
+            pdf.set_xy(150, 30 + (i * 4))
+            pdf.cell(10, 13, f'{paciente.poblacion}')
 
-        pdf.line(10, 30 + (len(self.sociedades_data) * 4) + 10, 200, 30 + (len(self.sociedades_data) * 4) + 10)
+        pdf.line(10, 30 + (len(self.pacientes_data) * 4) + 10, 200, 30 + (len(self.pacientes_data) * 4) + 10)
 
-        pdf.set_xy(10, 30 + (len(self.sociedades_data) * 4) + 10)
-        pdf.cell(10, 10, f'Total: {len(self.sociedades_data)}')
+        pdf.set_xy(10, 30 + (len(self.pacientes_data) * 4) + 10)
+        pdf.cell(10, 10, f'Total: {len(self.pacientes_data)}')
 
-        pdf.line(10, 30 + (len(self.sociedades_data) * 4) + 20, 200, 30 + (len(self.sociedades_data) * 4) + 20)
+        pdf.line(10, 30 + (len(self.pacientes_data) * 4) + 20, 200, 30 + (len(self.pacientes_data) * 4) + 20)
 
         try:
-            pdf.output('sociedades.pdf', 'F')
+            pdf.output('pacientes.pdf', 'F')
             QMessageBox.information(self, "Listado", "Listado generado correctamente")
-            open_file('sociedades.pdf')
+            open_file('pacientes.pdf')
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Error al generar el listado: {e}")
         
     def order_data(self):
         if self.codigo_radio.isChecked():
-            self.sociedades_data = sorted(self.sociedades_data, key=lambda x: x.codigo) # type: ignore
+            self.pacientes_data = sorted(self.pacientes_data, key=lambda x: x.codigo) # type: ignore
         elif self.nombre_radio.isChecked():
-            self.sociedades_data = sorted(self.sociedades_data, key=lambda x: x.nombre) # type: ignore
+            self.pacientes_data = sorted(self.pacientes_data, key=lambda x: x.nombre) # type: ignore
+        else:
+            print("Error: No radio button is checked")
         
         self.bottom_table.clearContents()
-        self.bottom_table.setRowCount(len(self.sociedades_data))
-        self.bottom_table.setColumnCount(2)
+        self.bottom_table.setRowCount(len(self.pacientes_data))
+        self.bottom_table.setColumnCount(5)
 
         self.bottom_table.setHorizontalHeaderLabels(["Codigo", "Nombre"])
 
-        for i, sociedad in enumerate(self.sociedades_data):
-            self.bottom_table.setItem(i, 0, QTableWidgetItem(sociedad.codigo)) # type: ignore
-            self.bottom_table.setItem(i, 1, QTableWidgetItem(sociedad.nombre)) # type: ignore
+        for i, paciente in enumerate(self.pacientes_data):
+            self.bottom_table.setItem(i, 0, QTableWidgetItem(paciente.codigo)) # type: ignore
+            self.bottom_table.setItem(i, 1, QTableWidgetItem(paciente.nombre)) # type: ignore
+            self.bottom_table.setItem(i, 2, QTableWidgetItem(paciente.domicilio)) # type: ignore
+            self.bottom_table.setItem(i, 3, QTableWidgetItem(paciente.cp)) # type: ignore
+            self.bottom_table.setItem(i, 4, QTableWidgetItem(paciente.poblacion)) # type: ignore
 
 
 
 
     def load_data(self):
-        self.sociedades_data = db.session.query(Sociedad).order_by(Sociedad.codigo).all()
+        self.pacientes_data = db.session.query(Paciente).order_by(Paciente.codigo).all()
 
-        self.bottom_table.setRowCount(len(self.sociedades_data))
-        self.bottom_table.setColumnCount(2)
+        self.bottom_table.setRowCount(len(self.pacientes_data))
+        self.bottom_table.setColumnCount(5)
 
-        self.bottom_table.setHorizontalHeaderLabels(["Código", "Nombre"])
+        self.bottom_table.setHorizontalHeaderLabels(["Código", "Nombre", "Domicilio", "C. Postal", "Poblacion"])
 
-        for i, sociedad in enumerate(self.sociedades_data):
-            self.bottom_table.setItem(i, 0, QTableWidgetItem(sociedad.codigo)) # type: ignore
-            self.bottom_table.setItem(i, 1, QTableWidgetItem(sociedad.nombre)) # type: ignore
+        for i, paciente in enumerate(self.pacientes_data):
+            self.bottom_table.setItem(i, 0, QTableWidgetItem(paciente.codigo)) # type: ignore
+            self.bottom_table.setItem(i, 1, QTableWidgetItem(paciente.nombre)) # type: ignore
+            self.bottom_table.setItem(i, 2, QTableWidgetItem(paciente.domicilio)) # type: ignore
+            self.bottom_table.setItem(i, 3, QTableWidgetItem(paciente.cp)) # type: ignore
+            self.bottom_table.setItem(i, 4, QTableWidgetItem(paciente.poblacion)) # type: ignore
     
-    def edit_clinica(self):
-        clinica = self.sociedades_data[self.bottom_table.currentRow()]
+    def edit_paciente(self):
+        paciente = self.pacientes_data[self.bottom_table.currentRow()]
 
-        self.edit_clinica = EditClinica(clinica, self)
-        self.edit_clinica.show()
+        self.edit_paciente = EditPaciente(paciente, self)
+        self.edit_paciente.show()
     
-    def add_clinica(self):
-        self.add_clinica = AddClinica(self)
-        self.add_clinica.show()
+    def add_paciente(self):
+        self.add_paciente = AddPaciente(self)
+        self.add_paciente.show()
 
-    def delete_clinica(self):
+    def delete_paciente(self):
 
         # Create a confirm dialog
         confirm = QMessageBox()
         confirm.setWindowTitle("Eliminar")
-        confirm.setText(f"¿Estás seguro de que quieres eliminar la sociedad {self.sociedades_data[self.bottom_table.currentRow()].nombre}?")
+        confirm.setText(f"¿Estás seguro de que quieres eliminar el paciente {self.pacientes_data[self.bottom_table.currentRow()].nombre}?")
 
         confirm.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         confirm.setDefaultButton(QMessageBox.No)
@@ -180,16 +206,16 @@ class SociedadPage(QWidget):
         if confirm.exec_() == QMessageBox.No:
             return
 
-        sociedad = self.sociedades_data[self.bottom_table.currentRow()]
+        paciente = self.pacientes_data[self.bottom_table.currentRow()]
 
         thread_safe_db = Database()
 
         # Query the database for the clinica
-        sociedad = thread_safe_db.session.query(Sociedad).filter_by(id=sociedad.id).first()
+        paciente = thread_safe_db.session.query(Paciente).filter_by(id=paciente.id).first()
 
         # Delete the clinica
         try:
-            thread_safe_db.session.delete(sociedad)
+            thread_safe_db.session.delete(paciente)
             thread_safe_db.session.flush()
             thread_safe_db.session.commit()
             thread_safe_db.session.close()
@@ -200,10 +226,10 @@ class SociedadPage(QWidget):
         self.order_data()
 
         
-class EditClinica(QWidget):
-    def __init__(self, sociedad: Sociedad, upper) -> None:
+class EditPaciente(QWidget):
+    def __init__(self, paciente: Paciente, upper) -> None:
         super().__init__()
-        self.sociedad = sociedad
+        self.paciente = paciente
         self.upper = upper
         self.initUI()
     
@@ -211,7 +237,7 @@ class EditClinica(QWidget):
         self.layout = QHBoxLayout() # type: ignore
         self.setLayout(self.layout)
 
-        self.setWindowTitle("Editar Clinica")
+        self.setWindowTitle("Editar Referidor")
 
         # Center the window on the screen
         width = 800
@@ -230,13 +256,31 @@ class EditClinica(QWidget):
         self.nombre_label = QLabel("Nombre")
         self.nombre_lineedit = QLineEdit()
 
-        self.codigo_lineedit.setText(self.sociedad.codigo) # type: ignore
-        self.nombre_lineedit.setText(self.sociedad.nombre) # type: ignore
+        self.domicilio_label = QLabel("Domicilio")
+        self.domicilio_lineedit = QLineEdit()
+
+        self.cp_label = QLabel("Código Postal")
+        self.cp_lineedit = QLineEdit()
+
+        self.poblacion_label = QLabel("Población")
+        self.poblacion_lineedit = QLineEdit()
+
+        self.codigo_lineedit.setText(self.paciente.codigo) # type: ignore
+        self.nombre_lineedit.setText(self.paciente.nombre) # type: ignore
+        self.domicilio_lineedit.setText(self.paciente.domicilio) # type: ignore
+        self.cp_lineedit.setText(self.paciente.cp) # type: ignore
+        self.poblacion_lineedit.setText(self.paciente.poblacion) # type: ignore
 
         self.layout.addWidget(self.codigo_label)
         self.layout.addWidget(self.codigo_lineedit)
         self.layout.addWidget(self.nombre_label)
         self.layout.addWidget(self.nombre_lineedit)
+        self.layout.addWidget(self.domicilio_label)
+        self.layout.addWidget(self.domicilio_lineedit)
+        self.layout.addWidget(self.cp_label)
+        self.layout.addWidget(self.cp_lineedit)
+        self.layout.addWidget(self.poblacion_label)
+        self.layout.addWidget(self.poblacion_lineedit)
 
         # Create a button 'Guardar'
         self.save_button = QPushButton("Guardar")
@@ -248,14 +292,17 @@ class EditClinica(QWidget):
     def save_data(self):
         thread_safe_db = Database()
 
-        sociedad_from_db = thread_safe_db.session.query(Sociedad).filter_by(id=self.sociedad.id).first() # type: ignore
+        referidor_from_db = thread_safe_db.session.query(Paciente).filter_by(id=self.paciente.id).first() # type: ignore
 
-        if sociedad_from_db is None:
-            QMessageBox.critical(self, "Error", "No se ha encontrado la sociedad")
+        if referidor_from_db is None:
+            QMessageBox.critical(self, "Error", "No se ha encontrado el referidor")
             return
 
-        sociedad_from_db.codigo = self.codigo_lineedit.text() # type: ignore
-        sociedad_from_db.nombre = self.nombre_lineedit.text() # type: ignore
+        referidor_from_db.codigo = self.codigo_lineedit.text() # type: ignore
+        referidor_from_db.nombre = self.nombre_lineedit.text() # type: ignore
+        referidor_from_db.domicilio = self.domicilio_lineedit.text() # type: ignore
+        referidor_from_db.cp = self.cp_lineedit.text() # type: ignore
+        referidor_from_db.poblacion = self.poblacion_lineedit.text() # type: ignore
 
         try:
             thread_safe_db.session.flush()
@@ -271,7 +318,7 @@ class EditClinica(QWidget):
 
 
 
-class AddClinica(QWidget):
+class AddPaciente(QWidget):
     def __init__(self,  upper) -> None:
         super().__init__()
         self.upper = upper
@@ -281,7 +328,7 @@ class AddClinica(QWidget):
         self.layout = QHBoxLayout() # type: ignore
         self.setLayout(self.layout)
 
-        self.setWindowTitle("Añadir Clinica")
+        self.setWindowTitle("Añadir referidor")
 
         # Center the window on the screen
         width = 800
@@ -300,10 +347,25 @@ class AddClinica(QWidget):
         self.nombre_label = QLabel("Nombre")
         self.nombre_lineedit = QLineEdit()
 
+        self.domicilio_label = QLabel("Domicilio")
+        self.domicilio_lineedit = QLineEdit()
+
+        self.cp_label = QLabel("Código Postal")
+        self.cp_lineedit = QLineEdit()
+
+        self.poblacion_label = QLabel("Población")
+        self.poblacion_lineedit = QLineEdit()
+
         self.layout.addWidget(self.letra_label)
         self.layout.addWidget(self.letra_lineedit)
         self.layout.addWidget(self.nombre_label)
         self.layout.addWidget(self.nombre_lineedit)
+        self.layout.addWidget(self.domicilio_label)
+        self.layout.addWidget(self.domicilio_lineedit)
+        self.layout.addWidget(self.cp_label)
+        self.layout.addWidget(self.cp_lineedit)
+        self.layout.addWidget(self.poblacion_label)
+        self.layout.addWidget(self.poblacion_lineedit)
 
         # Create a button 'Guardar'
         self.save_button = QPushButton("Guardar")
@@ -316,13 +378,16 @@ class AddClinica(QWidget):
         thread_safe_db = Database()
 
         # Save a new 'sociedad' to the database
-        sociedad = Sociedad(
+        paciente = Paciente(
             codigo=self.letra_lineedit.text(),
-            nombre=self.nombre_lineedit.text()
+            nombre=self.nombre_lineedit.text(),
+            domicilio=self.domicilio_lineedit.text(),
+            cp=self.cp_lineedit.text(),
+            poblacion=self.poblacion_lineedit.text()
         )
 
         try:
-            thread_safe_db.session.add(sociedad)
+            thread_safe_db.session.add(paciente)
             thread_safe_db.session.flush()
             thread_safe_db.session.commit()
             thread_safe_db.session.close()

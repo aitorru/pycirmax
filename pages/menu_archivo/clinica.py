@@ -17,7 +17,7 @@ class ClinicaPage(QWidget):
         width = 500
         height = 500
 
-        screen_geometry = QApplication.desktop().screenGeometry()
+        screen_geometry = QApplication.desktop().screenGeometry() # type: ignore
         x = (screen_geometry.width() - width) / 2
         y = (screen_geometry.height() - height) / 2
 
@@ -189,7 +189,7 @@ class EditClinica(QWidget):
         width = 800
         height = 50
 
-        screen_geometry = QApplication.desktop().screenGeometry()
+        screen_geometry = QApplication.desktop().screenGeometry() # type: ignore
         x = (screen_geometry.width() - width) / 2
         y = (screen_geometry.height() - height) / 2
 
@@ -259,7 +259,7 @@ class AddClinica(QWidget):
         width = 800
         height = 50
 
-        screen_geometry = QApplication.desktop().screenGeometry()
+        screen_geometry = QApplication.desktop().screenGeometry() # type: ignore
         x = (screen_geometry.width() - width) / 2
         y = (screen_geometry.height() - height) / 2
 
