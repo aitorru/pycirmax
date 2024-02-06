@@ -1,8 +1,6 @@
-from typing import List
-from PyQt5.QtWidgets import QWidget, QApplication, QHBoxLayout, QPushButton, QTabWidget, QVBoxLayout, QFrame, QTabBar, QFormLayout, QLabel, QLineEdit, QTextEdit, QMessageBox, QGroupBox, QRadioButton, QTableWidget, QTableWidgetItem
-from PyQt5.QtCore import QSize
+from PyQt5.QtWidgets import QWidget, QApplication, QHBoxLayout, QPushButton, QVBoxLayout, QFrame, QLabel, QLineEdit, QMessageBox, QGroupBox, QRadioButton, QTableWidget, QTableWidgetItem
 
-from db.db import db, Paciente, config, Database
+from db.db import db, Paciente, Database
 from utils.utils import open_file
 
 class ReferidorPage(QWidget):
