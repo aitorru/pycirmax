@@ -142,4 +142,6 @@ class MainWindow(QMainWindow):
         self.referidor_page.show()
 
     def open_pacientes(self):
-        pass
+        from pages.menu_archivo.pacientes import PacientePage
+        self.paciente_page = PacientePage()
+        self.paciente_page.show()

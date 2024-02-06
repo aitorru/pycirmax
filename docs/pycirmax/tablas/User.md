@@ -9,3 +9,9 @@ class User(Base):
     name = Column(String)
     password = Column(String)
 ```
+
+## Definiciones
+
+El código es el nombre de usuario.
+El nombre es el propio nombre del usuario.
+Contraseña se puede entender.

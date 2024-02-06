@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QWidget, QApplication, QHBoxLayout, QPushButton, QVB
 from db.db import db, Paciente, Database
 from utils.utils import open_file
 
-class ReferidorPage(QWidget):
+class PacientePage(QWidget):
     def __init__(self) -> None:
         super().__init__()
         self.initUI()
@@ -45,6 +45,11 @@ class ReferidorPage(QWidget):
         self.nombre_radio = QRadioButton("Nombre")
         self.orden_groupbox_layout.addWidget(self.codigo_radio)
         self.orden_groupbox_layout.addWidget(self.nombre_radio)
+        
+        # If the user clicks on the 'codigo' radio button, order the data by 'codigo'
+        # If the user clicks on the 'nombre' radio button, order the data by 'nombre'
+        self.codigo_radio.clicked.connect(self.order_data)
+        self.nombre_radio.clicked.connect(self.order_data)
 
 
         # Create two buttons 'Edicion' and 'Salir'
@@ -61,7 +66,7 @@ class ReferidorPage(QWidget):
         # Add actions
         self.listar_button.clicked.connect(self.listar_data)
         self.salir_button.clicked.connect(self.close) # type: ignore
-        self.edit_button.clicked.connect(self.edit_referidor)
+        self.edit_button.clicked.connect(self.edit_paciente)
 
         # Create a table
         self.bottom_table = QTableWidget()
@@ -73,11 +78,11 @@ class ReferidorPage(QWidget):
 
         self.add_button = QPushButton("Añadir")
         self.bottom_frame_layout.addWidget(self.add_button)
-        self.add_button.clicked.connect(self.add_referidor)
+        self.add_button.clicked.connect(self.add_paciente)
 
         self.delete_button = QPushButton("Eliminar")
         self.bottom_frame_layout.addWidget(self.delete_button)
-        self.delete_button.clicked.connect(self.delete_referidor)
+        self.delete_button.clicked.connect(self.delete_paciente)
 
         self.layout.addWidget(self.bottom_frame)
     
@@ -91,7 +96,7 @@ class ReferidorPage(QWidget):
         pdf.set_font('Arial', 'B', 11)
         pdf.line(10, 10, 200, 10)
         pdf.line(10, 11, 200, 11)
-        pdf.cell(10, 10, 'Listado de referidores')
+        pdf.cell(10, 10, 'Listado de pacientes')
         import datetime
         current_date = datetime.datetime.now()
         pdf.set_xy(150, 10)
@@ -103,11 +108,11 @@ class ReferidorPage(QWidget):
         pdf.set_xy(100, 25)
         pdf.cell(10, 10, 'Nombre')
         pdf.line(100, 33, 117, 33)
-        for i, referidor in enumerate(self.pacientes_data):
+        for i, paciente in enumerate(self.pacientes_data):
             pdf.set_xy(70, 30 + (i * 4))
-            pdf.cell(10, 13, f'{referidor.codigo}')
+            pdf.cell(10, 13, f'{paciente.codigo}')
             pdf.set_xy(100, 30 + (i * 4))
-            pdf.cell(10, 13, f'{referidor.nombre}')
+            pdf.cell(10, 13, f'{paciente.nombre}')
 
         pdf.line(10, 30 + (len(self.pacientes_data) * 4) + 10, 200, 30 + (len(self.pacientes_data) * 4) + 10)
 
@@ -124,20 +129,27 @@ class ReferidorPage(QWidget):
             QMessageBox.critical(self, "Error", f"Error al generar el listado: {e}")
         
     def order_data(self):
+        print(self.pacientes_data)
         if self.codigo_radio.isChecked():
             self.pacientes_data = sorted(self.pacientes_data, key=lambda x: x.codigo) # type: ignore
         elif self.nombre_radio.isChecked():
             self.pacientes_data = sorted(self.pacientes_data, key=lambda x: x.nombre) # type: ignore
+        else:
+            print("Error: No radio button is checked")
         
+        print(self.pacientes_data)
         self.bottom_table.clearContents()
         self.bottom_table.setRowCount(len(self.pacientes_data))
-        self.bottom_table.setColumnCount(2)
+        self.bottom_table.setColumnCount(5)
 
         self.bottom_table.setHorizontalHeaderLabels(["Codigo", "Nombre"])
 
-        for i, referidor in enumerate(self.pacientes_data):
-            self.bottom_table.setItem(i, 0, QTableWidgetItem(referidor.codigo)) # type: ignore
-            self.bottom_table.setItem(i, 1, QTableWidgetItem(referidor.nombre)) # type: ignore
+        for i, paciente in enumerate(self.pacientes_data):
+            self.bottom_table.setItem(i, 0, QTableWidgetItem(paciente.codigo)) # type: ignore
+            self.bottom_table.setItem(i, 1, QTableWidgetItem(paciente.nombre)) # type: ignore
+            self.bottom_table.setItem(i, 2, QTableWidgetItem(paciente.domicilio)) # type: ignore
+            self.bottom_table.setItem(i, 3, QTableWidgetItem(paciente.cp)) # type: ignore
+            self.bottom_table.setItem(i, 4, QTableWidgetItem(paciente.poblacion)) # type: ignore
 
 
 
@@ -146,7 +158,7 @@ class ReferidorPage(QWidget):
         self.pacientes_data = db.session.query(Paciente).order_by(Paciente.codigo).all()
 
         self.bottom_table.setRowCount(len(self.pacientes_data))
-        self.bottom_table.setColumnCount(2)
+        self.bottom_table.setColumnCount(5)
 
         self.bottom_table.setHorizontalHeaderLabels(["Código", "Nombre", "Domicilio", "C. Postal", "Poblacion"])
 
@@ -157,22 +169,22 @@ class ReferidorPage(QWidget):
             self.bottom_table.setItem(i, 3, QTableWidgetItem(paciente.cp)) # type: ignore
             self.bottom_table.setItem(i, 4, QTableWidgetItem(paciente.poblacion)) # type: ignore
     
-    def edit_referidor(self):
-        referidor = self.pacientes_data[self.bottom_table.currentRow()]
+    def edit_paciente(self):
+        paciente = self.pacientes_data[self.bottom_table.currentRow()]
 
-        self.edit_referidor = EditReferidor(referidor, self)
-        self.edit_referidor.show()
+        self.edit_paciente = EditPaciente(paciente, self)
+        self.edit_paciente.show()
     
-    def add_referidor(self):
-        self.add_referidor = AddReferidor(self)
-        self.add_referidor.show()
+    def add_paciente(self):
+        self.add_paciente = AddPaciente(self)
+        self.add_paciente.show()
 
-    def delete_referidor(self):
+    def delete_paciente(self):
 
         # Create a confirm dialog
         confirm = QMessageBox()
         confirm.setWindowTitle("Eliminar")
-        confirm.setText(f"¿Estás seguro de que quieres eliminar el referidor {self.pacientes_data[self.bottom_table.currentRow()].nombre}?")
+        confirm.setText(f"¿Estás seguro de que quieres eliminar el paciente {self.pacientes_data[self.bottom_table.currentRow()].nombre}?")
 
         confirm.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         confirm.setDefaultButton(QMessageBox.No)
@@ -181,16 +193,16 @@ class ReferidorPage(QWidget):
         if confirm.exec_() == QMessageBox.No:
             return
 
-        referidor = self.pacientes_data[self.bottom_table.currentRow()]
+        paciente = self.pacientes_data[self.bottom_table.currentRow()]
 
         thread_safe_db = Database()
 
         # Query the database for the clinica
-        referidor = thread_safe_db.session.query(Paciente).filter_by(id=referidor.id).first()
+        paciente = thread_safe_db.session.query(Paciente).filter_by(id=paciente.id).first()
 
         # Delete the clinica
         try:
-            thread_safe_db.session.delete(referidor)
+            thread_safe_db.session.delete(paciente)
             thread_safe_db.session.flush()
             thread_safe_db.session.commit()
             thread_safe_db.session.close()
@@ -201,10 +213,10 @@ class ReferidorPage(QWidget):
         self.order_data()
 
         
-class EditReferidor(QWidget):
-    def __init__(self, referidor: Paciente, upper) -> None:
+class EditPaciente(QWidget):
+    def __init__(self, paciente: Paciente, upper) -> None:
         super().__init__()
-        self.referidor = referidor
+        self.paciente = paciente
         self.upper = upper
         self.initUI()
     
@@ -231,8 +243,8 @@ class EditReferidor(QWidget):
         self.nombre_label = QLabel("Nombre")
         self.nombre_lineedit = QLineEdit()
 
-        self.codigo_lineedit.setText(self.referidor.codigo) # type: ignore
-        self.nombre_lineedit.setText(self.referidor.nombre) # type: ignore
+        self.codigo_lineedit.setText(self.paciente.codigo) # type: ignore
+        self.nombre_lineedit.setText(self.paciente.nombre) # type: ignore
 
         self.layout.addWidget(self.codigo_label)
         self.layout.addWidget(self.codigo_lineedit)
@@ -249,7 +261,7 @@ class EditReferidor(QWidget):
     def save_data(self):
         thread_safe_db = Database()
 
-        referidor_from_db = thread_safe_db.session.query(Paciente).filter_by(id=self.referidor.id).first() # type: ignore
+        referidor_from_db = thread_safe_db.session.query(Paciente).filter_by(id=self.paciente.id).first() # type: ignore
 
         if referidor_from_db is None:
             QMessageBox.critical(self, "Error", "No se ha encontrado el referidor")
@@ -272,7 +284,7 @@ class EditReferidor(QWidget):
 
 
 
-class AddReferidor(QWidget):
+class AddPaciente(QWidget):
     def __init__(self,  upper) -> None:
         super().__init__()
         self.upper = upper
@@ -301,10 +313,25 @@ class AddReferidor(QWidget):
         self.nombre_label = QLabel("Nombre")
         self.nombre_lineedit = QLineEdit()
 
+        self.domicilio_label = QLabel("Domicilio")
+        self.domicilio_lineedit = QLineEdit()
+
+        self.cp_label = QLabel("Código Postal")
+        self.cp_lineedit = QLineEdit()
+
+        self.poblacion_label = QLabel("Población")
+        self.poblacion_lineedit = QLineEdit()
+
         self.layout.addWidget(self.letra_label)
         self.layout.addWidget(self.letra_lineedit)
         self.layout.addWidget(self.nombre_label)
         self.layout.addWidget(self.nombre_lineedit)
+        self.layout.addWidget(self.domicilio_label)
+        self.layout.addWidget(self.domicilio_lineedit)
+        self.layout.addWidget(self.cp_label)
+        self.layout.addWidget(self.cp_lineedit)
+        self.layout.addWidget(self.poblacion_label)
+        self.layout.addWidget(self.poblacion_lineedit)
 
         # Create a button 'Guardar'
         self.save_button = QPushButton("Guardar")
@@ -317,13 +344,16 @@ class AddReferidor(QWidget):
         thread_safe_db = Database()
 
         # Save a new 'sociedad' to the database
-        referidor = Paciente(
+        paciente = Paciente(
             codigo=self.letra_lineedit.text(),
-            nombre=self.nombre_lineedit.text()
+            nombre=self.nombre_lineedit.text(),
+            domicilio=self.domicilio_lineedit.text(),
+            cp=self.cp_lineedit.text(),
+            poblacion=self.poblacion_lineedit.text()
         )
 
         try:
-            thread_safe_db.session.add(referidor)
+            thread_safe_db.session.add(paciente)
             thread_safe_db.session.flush()
             thread_safe_db.session.commit()
             thread_safe_db.session.close()
