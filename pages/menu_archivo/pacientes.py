@@ -102,17 +102,32 @@ class PacientePage(QWidget):
         pdf.set_xy(150, 10)
         pdf.cell(10, 10, f'Fecha: {current_date.day}/{current_date.month}/{current_date.year}')
         pdf.line(10, 18, 200, 18)
-        pdf.set_xy(70, 25)
+        pdf.set_xy(30, 25)
         pdf.cell(10, 10, 'Codigo')
-        pdf.line(70, 33, 86, 33)
-        pdf.set_xy(100, 25)
+        pdf.line(30, 33, 86, 33)
+        pdf.set_xy(60, 25)
         pdf.cell(10, 10, 'Nombre')
-        pdf.line(100, 33, 117, 33)
+        pdf.line(60, 33, 117, 33)
+        pdf.set_xy(90, 25)
+        pdf.cell(10, 10, 'Domicilio')
+        pdf.line(90, 33, 146, 33)
+        pdf.set_xy(120, 25)
+        pdf.cell(10, 10, 'C. Postal')
+        pdf.line(120, 33, 176, 33)
+        pdf.set_xy(150, 25)
+        pdf.cell(10, 10, 'Poblacion')
+        pdf.line(150, 33, 200, 33)
         for i, paciente in enumerate(self.pacientes_data):
-            pdf.set_xy(70, 30 + (i * 4))
+            pdf.set_xy(30, 30 + (i * 4))
             pdf.cell(10, 13, f'{paciente.codigo}')
-            pdf.set_xy(100, 30 + (i * 4))
+            pdf.set_xy(60, 30 + (i * 4))
             pdf.cell(10, 13, f'{paciente.nombre}')
+            pdf.set_xy(90, 30 + (i * 4))
+            pdf.cell(10, 13, f'{paciente.domicilio}')
+            pdf.set_xy(120, 30 + (i * 4))
+            pdf.cell(10, 13, f'{paciente.cp}')
+            pdf.set_xy(150, 30 + (i * 4))
+            pdf.cell(10, 13, f'{paciente.poblacion}')
 
         pdf.line(10, 30 + (len(self.pacientes_data) * 4) + 10, 200, 30 + (len(self.pacientes_data) * 4) + 10)
 
@@ -129,7 +144,6 @@ class PacientePage(QWidget):
             QMessageBox.critical(self, "Error", f"Error al generar el listado: {e}")
         
     def order_data(self):
-        print(self.pacientes_data)
         if self.codigo_radio.isChecked():
             self.pacientes_data = sorted(self.pacientes_data, key=lambda x: x.codigo) # type: ignore
         elif self.nombre_radio.isChecked():
@@ -137,7 +151,6 @@ class PacientePage(QWidget):
         else:
             print("Error: No radio button is checked")
         
-        print(self.pacientes_data)
         self.bottom_table.clearContents()
         self.bottom_table.setRowCount(len(self.pacientes_data))
         self.bottom_table.setColumnCount(5)
@@ -243,13 +256,31 @@ class EditPaciente(QWidget):
         self.nombre_label = QLabel("Nombre")
         self.nombre_lineedit = QLineEdit()
 
+        self.domicilio_label = QLabel("Domicilio")
+        self.domicilio_lineedit = QLineEdit()
+
+        self.cp_label = QLabel("Código Postal")
+        self.cp_lineedit = QLineEdit()
+
+        self.poblacion_label = QLabel("Población")
+        self.poblacion_lineedit = QLineEdit()
+
         self.codigo_lineedit.setText(self.paciente.codigo) # type: ignore
         self.nombre_lineedit.setText(self.paciente.nombre) # type: ignore
+        self.domicilio_lineedit.setText(self.paciente.domicilio) # type: ignore
+        self.cp_lineedit.setText(self.paciente.cp) # type: ignore
+        self.poblacion_lineedit.setText(self.paciente.poblacion) # type: ignore
 
         self.layout.addWidget(self.codigo_label)
         self.layout.addWidget(self.codigo_lineedit)
         self.layout.addWidget(self.nombre_label)
         self.layout.addWidget(self.nombre_lineedit)
+        self.layout.addWidget(self.domicilio_label)
+        self.layout.addWidget(self.domicilio_lineedit)
+        self.layout.addWidget(self.cp_label)
+        self.layout.addWidget(self.cp_lineedit)
+        self.layout.addWidget(self.poblacion_label)
+        self.layout.addWidget(self.poblacion_lineedit)
 
         # Create a button 'Guardar'
         self.save_button = QPushButton("Guardar")
@@ -269,6 +300,9 @@ class EditPaciente(QWidget):
 
         referidor_from_db.codigo = self.codigo_lineedit.text() # type: ignore
         referidor_from_db.nombre = self.nombre_lineedit.text() # type: ignore
+        referidor_from_db.domicilio = self.domicilio_lineedit.text() # type: ignore
+        referidor_from_db.cp = self.cp_lineedit.text() # type: ignore
+        referidor_from_db.poblacion = self.poblacion_lineedit.text() # type: ignore
 
         try:
             thread_safe_db.session.flush()
