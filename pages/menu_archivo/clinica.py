@@ -41,10 +41,10 @@ class ClinicaPage(QWidget):
 
         # Add the order selector
         # Create two radio buttons 'codigo' and 'nombre'
-        self.codigo_radio = QRadioButton("Codigo")
-        self.codigo_radio.setChecked(True)
+        self.inicial_radio = QRadioButton("Inicial")
+        self.inicial_radio.setChecked(True)
         self.nombre_radio = QRadioButton("Nombre")
-        self.orden_groupbox_layout.addWidget(self.codigo_radio)
+        self.orden_groupbox_layout.addWidget(self.inicial_radio)
         self.orden_groupbox_layout.addWidget(self.nombre_radio)
 
 
@@ -56,8 +56,6 @@ class ClinicaPage(QWidget):
         self.top_frame_layout.addWidget(self.edit_button)
         self.top_frame_layout.addWidget(self.save_button)
         self.top_frame_layout.addWidget(self.salir_button)
-
-
 
         # Add actions
         self.save_button.clicked.connect(self.save_data)
@@ -97,7 +95,7 @@ class ClinicaPage(QWidget):
             toml.dump(config, f)
         
     def order_data(self):
-        if self.codigo_radio.isChecked():
+        if self.inicial_radio.isChecked():
             self.clinicas_data = sorted(self.clinicas_data, key=lambda x: x.letra) # type: ignore
         elif self.nombre_radio.isChecked():
             self.clinicas_data = sorted(self.clinicas_data, key=lambda x: x.nombre) # type: ignore
@@ -106,7 +104,7 @@ class ClinicaPage(QWidget):
         self.bottom_table.setRowCount(len(self.clinicas_data))
         self.bottom_table.setColumnCount(2)
 
-        self.bottom_table.setHorizontalHeaderLabels(["Código", "Nombre"])
+        self.bottom_table.setHorizontalHeaderLabels(["Inicial", "Nombre"])
 
         for i, clinica in enumerate(self.clinicas_data):
             self.bottom_table.setItem(i, 0, QTableWidgetItem(clinica.letra)) # type: ignore
@@ -122,7 +120,7 @@ class ClinicaPage(QWidget):
         self.bottom_table.setRowCount(len(self.clinicas_data))
         self.bottom_table.setColumnCount(2)
 
-        self.bottom_table.setHorizontalHeaderLabels(["Código", "Nombre"])
+        self.bottom_table.setHorizontalHeaderLabels(["Inicial", "Nombre"])
 
         for i, clinica in enumerate(self.clinicas_data):
             self.bottom_table.setItem(i, 0, QTableWidgetItem(clinica.letra)) # type: ignore
