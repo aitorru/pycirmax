@@ -55,6 +55,7 @@ class MainWindow(QMainWindow):
         archivos_menu.addAction(pacientes_action)
 
         conceptos_action = QAction("Conceptos", self)
+        conceptos_action.triggered.connect(self.open_conceptos)
         archivos_menu.addAction(conceptos_action)
 
         presupuestos_action = QAction("Presupuestos", self)
@@ -145,3 +146,8 @@ class MainWindow(QMainWindow):
         from pages.menu_archivo.pacientes import PacientePage
         self.paciente_page = PacientePage()
         self.paciente_page.show()
+
+    def open_conceptos(self):
+        from pages.menu_archivo.conceptos import ConceptoPage
+        self.concepto_page = ConceptoPage()
+        self.concepto_page.show()

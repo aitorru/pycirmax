@@ -3,3 +3,4 @@ docs/pycirmax/.obsidian/plugins/copilot/data.json
 __pycache__/
 *.pyc
 *.pdf
+utils/__pycache__/

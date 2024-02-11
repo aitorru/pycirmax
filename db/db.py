@@ -158,6 +158,13 @@ class _State:
         if self.usuario_activo is None:
             return ''
         return str(self.usuario_activo.name)
+  
+class Concepto(Base):
+    __tablename__ = 'concepto'
+    id = Column(Integer, primary_key=True)
+    codigo = Column(String)
+    nombre = Column(String)
+    precio = Column(String)
 
 db = _Database()
 db.create_tables()
