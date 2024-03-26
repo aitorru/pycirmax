@@ -20,7 +20,7 @@ class ConfigPage(QWidget):
         width = 1000
         height = 800
 
-        screen_geometry = QApplication.desktop().screenGeometry()
+        screen_geometry = QApplication.desktop().screenGeometry() # type: ignore
         x = (screen_geometry.width() - width) / 2
         y = (screen_geometry.height() - height) / 2
 
@@ -162,8 +162,8 @@ class EmpresaPage(QWidget):
         # Pull the clinica from the db
         self.config_from_db = db.session.query(Empresa).where(Empresa.clinica_id == config['config']['clinica_id']).first()
 
-        if self.config_from_db == None:
-            QMessageBox.critical(self, "Error", "No se ha encontrado la clínica en la base de datos. Existe el fichero config.toml? Existe la clínica en la base de datos?Existe clinica_id en el fichero?")
+        if self.config_from_db is None:
+            QMessageBox.critical(self, "Error", "No se ha encontrado la clínica en la base de datos o la empresa en la base de datos. Existe el fichero config.toml? Existe la clínica en la base de datos? Existe clinica_id en el fichero?")
             return
         
         # Fill the form with the data
@@ -201,11 +201,10 @@ class EmpresaPage(QWidget):
 
     def save_data(self):
         thread_safe_db = Database()
-
         config_db = thread_safe_db.session.query(Empresa).where(Empresa.clinica_id == config['config']['clinica_id']).first()
 
-        if config_db == None:
-            QMessageBox.critical(self, "Error", "No se ha encontrado la clínica en la base de datos. Existe el fichero config.toml? Existe la clínica en la base de datos?Existe clinica_id en el fichero?")
+        if config_db is None:
+            QMessageBox.critical(self, "Error", "No se ha encontrado la clínica en la base de datos. Existe el fichero config.toml? Existe la clínica en la base de datos? Existe clinica_id en el fichero?")
             return
         
         config_db.nif = self.nif_edit.text() # type: ignore
@@ -268,8 +267,8 @@ class PresupuestosPage(QWidget):
         thread_safe_db = Database()
         presupuesto_from_db = thread_safe_db.session.query(Presupuesto).where(Presupuesto.clinica_id == config['config']['clinica_id']).first()
 
-        if presupuesto_from_db == None:
-            QMessageBox.critical(self, "Error", "No se ha encontrado la clínica en la base de datos. Existe el fichero config.toml? Existe la clínica en la base de datos?Existe clinica_id en el fichero?")
+        if presupuesto_from_db is None:
+            QMessageBox.critical(self, "Error", "No se ha encontrado la clínica o el presupuesto en la base de datos. Existe el fichero config.toml? Existe la clínica en la base de datos? Existe clinica_id en el fichero?")
             return
         
         self.encabezamiento_edit.setText(presupuesto_from_db.encabezamiento) # type: ignore
@@ -281,8 +280,8 @@ class PresupuestosPage(QWidget):
 
         presupuesto_db = thread_safe_db.session.query(Presupuesto).where(Presupuesto.clinica_id == config['config']['clinica_id']).first()
 
-        if presupuesto_db == None:
-            QMessageBox.critical(self, "Error", "No se ha encontrado la clínica en la base de datos. Existe el fichero config.toml? Existe la clínica en la base de datos?Existe clinica_id en el fichero?")
+        if presupuesto_db is None:
+            QMessageBox.critical(self, "Error", "No se ha encontrado la clínica o el presupuesto en la base de datos. Existe el fichero config.toml? Existe la clínica en la base de datos? Existe clinica_id en el fichero?")
             return
         
         presupuesto_db.encabezamiento = self.encabezamiento_edit.toPlainText() # type: ignore
@@ -340,8 +339,8 @@ class FacturasPage(QWidget):
     def load_data(self):
         self.config_from_db = db.session.query(Factura).where(Factura.clinica_id == config['config']['clinica_id']).first()
 
-        if self.config_from_db == None:
-            QMessageBox.critical(self, "Error", "No se ha encontrado la clínica en la base de datos. Existe el fichero config.toml? Existe la clínica en la base de datos?Existe clinica_id en el fichero?")
+        if self.config_from_db is None:
+            QMessageBox.critical(self, "Error", "No se ha encontrado la clínica o la factura en la base de datos. Existe el fichero config.toml? Existe la clínica en la base de datos? Existe clinica_id en el fichero?")
             return
         
         self.encabezamiento_edit.setText(self.config_from_db.encabezamiento) # type: ignore
@@ -353,8 +352,8 @@ class FacturasPage(QWidget):
 
         factura_db = thread_safe_db.session.query(Factura).where(Factura.clinica_id == config['config']['clinica_id']).first()
 
-        if factura_db == None:
-            QMessageBox.critical(self, "Error", "No se ha encontrado la clínica en la base de datos. Existe el fichero config.toml? Existe la clínica en la base de datos?Existe clinica_id en el fichero?")
+        if factura_db is None:
+            QMessageBox.critical(self, "Error", "No se ha encontrado la clínica o la factura en la base de datos. Existe el fichero config.toml? Existe la clínica en la base de datos? Existe clinica_id en el fichero?")
             return
         
         factura_db.encabezamiento = self.encabezamiento_edit.toPlainText() # type: ignore

@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QApplication, QHBoxLayout, QPushButton, QVBoxLayout, QFrame, QLabel, QLineEdit, QMessageBox, QGroupBox, QRadioButton, QTableWidget, QTableWidgetItem
 
 from db.db import db, Paciente, Database
-from utils.utils import open_file
+from utils.utils import open_file, draw_pdf_header
 
 class PacientePage(QWidget):
     def __init__(self) -> None:
@@ -94,14 +94,7 @@ class PacientePage(QWidget):
         pdf = FPDF()
         pdf.add_page()
         pdf.set_font('Arial', 'B', 11)
-        pdf.line(10, 10, 200, 10)
-        pdf.line(10, 11, 200, 11)
-        pdf.cell(10, 10, 'Listado de pacientes')
-        import datetime
-        current_date = datetime.datetime.now()
-        pdf.set_xy(150, 10)
-        pdf.cell(10, 10, f'Fecha: {current_date.day}/{current_date.month}/{current_date.year}')
-        pdf.line(10, 18, 200, 18)
+        draw_pdf_header(pdf)
         pdf.set_xy(30, 25)
         pdf.cell(10, 10, 'Codigo')
         pdf.line(30, 33, 86, 33)
